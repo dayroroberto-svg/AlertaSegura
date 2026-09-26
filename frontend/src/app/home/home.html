@@ -1,0 +1,68 @@
+<main class="home-page">
+  <section class="hero-shell">
+  <nav class="site-nav" aria-label="Navegación principal">
+    <a class="brand" routerLink="/">
+      <span class="brand-mark">+</span>
+      <span>Alerta<strong>Segura</strong></span>
+    </a>
+    <div class="nav-links">
+      <button class="nav-link active" type="button">Inicio</button>
+      <button class="nav-link" type="button" disabled>Alertas</button>
+      <button class="nav-link" type="button" disabled>Mapa</button>
+      <button class="nav-link" type="button" disabled>Prevención</button>
+      <button class="nav-link" type="button" disabled>Contactos</button>
+    </div>
+    <div class="nav-actions">
+      <a class="login-link" routerLink="/login">Iniciar sesión</a>
+      <button class="nav-report" type="button">Reportar emergencia <span>+</span></button>
+    </div>
+  </nav>
+
+  <section class="hero section-wrap">
+    <div class="hero-copy">
+      <div class="live-indicator"><i></i> SISTEMA OPERATIVO <span>·</span> ACTUALIZADO AHORA</div>
+      <h1>Mantente informado.<br /><em>Actúa a tiempo.</em></h1>
+      <p class="hero-description">Consulta alertas verificadas de tu comunidad y recibe la información necesaria para actuar ante una emergencia.</p>
+      <div class="hero-actions">
+        <button class="primary-button" type="button">Consultar alertas <span>↗</span></button>
+        <button class="text-button" type="button">Cómo funciona <span>↓</span></button>
+      </div>
+      <div class="hero-trust"><span class="trust-avatars"><i>DS</i><i>ML</i><i>+</i></span><span><strong>1,248</strong> personas informadas hoy</span></div>
+    </div>
+    <div class="hero-alerts" aria-label="Tipos de alerta monitoreados">
+      @for (item of emergencyTypes; track item.name) {
+        <article class="emergency-card" [class]="item.tone"><div class="card-top"><span class="emergency-icon">{{ item.icon }}</span><b>{{ item.count }}</b></div><h3>{{ item.name }}</h3><p>{{ item.description }}</p><button type="button" disabled>Ver alertas <span>↗</span></button></article>
+      }
+    </div>
+  </section>
+  </section>
+
+  <section class="alerts-section section-wrap">
+    <div class="section-heading"><div><h2>Alertas recientes</h2><p class="recent-subtitle">Últimas emergencias verificadas y activas.</p></div><button type="button" disabled>Ver todas <span>→</span></button></div>
+    <div class="alerts-list">
+      @for (alert of recentAlerts; track alert.description) {
+        <article class="alert-card"><div class="alert-card-header" [class]="alert.riskTone"><div class="alert-card-type"><span class="alert-symbol" [class]="alert.tone">{{ alert.type === 'Sismo' ? '⌁' : alert.type === 'Incendio' ? '✦' : '≈' }}</span><div><small>{{ alert.type }}</small><h3>{{ alert.description }}</h3></div></div><span class="alert-status" [class]="alert.status === 'Activo' ? 'active' : 'monitored'"><i></i>{{ alert.status }}</span></div><div class="alert-card-details"><span><small>Lugar</small><strong>{{ alert.location }}</strong></span><span><small>Riesgo</small><b class="risk" [class]="alert.riskTone">{{ alert.risk }}</b></span><span><small>Fecha y hora</small><strong>{{ alert.date }} · {{ alert.time }}</strong></span></div><button class="details-button" type="button" disabled>Ver detalles <span>→</span></button></article>
+      }
+    </div>
+  </section>
+
+  <section class="emergency-section section-wrap">
+    <div class="section-intro"><div><p class="eyebrow">VIGILANCIA CIUDADANA</p><h2>Tipos de<br /><em>emergencia.</em></h2></div><p>Consulta rápidamente los tipos de emergencia que nuestra red está monitoreando.</p></div>
+    <div class="emergency-grid">
+      @for (item of emergencyTypes; track item.name) {
+        <article class="emergency-card" [class]="item.tone"><div class="card-top"><span class="emergency-icon">{{ item.icon }}</span><b>{{ item.count }}</b></div><h3>{{ item.name }}</h3><p>{{ item.description }}</p><button type="button" disabled>Ver alertas <span>↗</span></button></article>
+      }
+    </div>
+  </section>
+
+  <section class="process-section section-wrap">
+    <div class="process-copy"><p class="eyebrow">ASÍ FUNCIONA</p><h2>¿Cómo funciona <em>AlertaSegura?</em></h2><p>Una comunidad informada responde mejor. Así convertimos cada reporte en una acción oportuna.</p></div>
+    <div class="process-steps">
+      <article class="process-step"><div class="step-icon">＋</div><div class="step-content"><b>01</b><strong>Reporta</strong><p>Ciudadanos reportan incidentes con ubicación, descripción e imágenes en tiempo real desde cualquier dispositivo.</p></div></article>
+      <article class="process-step"><div class="step-icon">⌕</div><div class="step-content"><b>02</b><strong>Verificamos</strong><p>Equipos especializados del INDECI y entidades competentes revisan cada reporte antes de publicarlo.</p></div></article>
+      <article class="process-step"><div class="step-icon">📢</div><div class="step-content"><b>03</b><strong>Informamos</strong><p>La alerta llega de inmediato a todos los ciudadanos de la zona afectada con recomendaciones claras.</p></div></article>
+    </div>
+  </section>
+
+  <footer class="site-footer section-wrap"><div class="brand"><span class="brand-mark">+</span><span>Alerta<strong>Segura</strong></span></div><p>Información para actuar. Comunidad para proteger.</p><span>© 2026 AlertaSegura</span></footer>
+</main>

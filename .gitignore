@@ -1,0 +1,34 @@
+# =======================
+# Archivos de IDE y SO
+# =======================
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# =======================
+# Backend (Spring Boot)
+# =======================
+alertasegura/target/
+alertasegura/logs/
+alertasegura/*.log
+alertasegura/src/main/resources/application-local.properties
+
+# =======================
+# Frontend (Angular)
+# =======================
+frontend/dist/
+frontend/out-tsc/
+frontend/node_modules/
+frontend/.angular/
+frontend/.npm/
+
+# =======================
+# Archivos Temporales IA
+# =======================
+.gemini/

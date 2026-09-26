@@ -1,0 +1,15 @@
+package com.alertasegura.alertasegura.repository;
+
+import com.alertasegura.alertasegura.entity.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    Optional<Usuario> findByCorreo(String correo);
+    Boolean existsByCorreo(String correo);
+    List<Usuario> findByEstado(Usuario.EstadoUsuario estado);
+    List<Usuario> findByRolNombre(String rolNombre);
+}

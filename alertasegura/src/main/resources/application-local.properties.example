@@ -1,0 +1,5 @@
+# Copia este archivo como application-local.properties y completa tus valores.
+# No subas application-local.properties al repositorio.
+DB_USERNAME=root
+DB_PASSWORD=tu_contrasena_local
+JWT_SECRET=crea-una-clave-secreta-larga-y-unica

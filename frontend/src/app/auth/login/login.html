@@ -1,0 +1,54 @@
+<main class="auth-shell">
+  <section class="auth-panel">
+    <div class="login-brand"><span class="brand-mark" aria-hidden="true">+</span><strong>Alerta<span>Segura</span></strong></div>
+    <p class="eyebrow">PLATAFORMA DE SEGURIDAD CIUDADANA</p>
+    <h1>Tu comunidad,<br /><em>más segura.</em></h1>
+    <p class="intro">Centraliza reportes, alertas y prevención para actuar a tiempo cuando más importa.</p>
+
+    <div class="signal-card">
+      <span class="signal-dot"></span>
+      <div>
+        <strong>Red activa</strong>
+        <span>Monitoreo de emergencias en Lima Este</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-panel">
+    <div class="form-heading">
+      <p class="eyebrow">BIENVENIDO DE VUELTA</p>
+      <h2>Inicia sesión</h2>
+      <p>Ingresa a tu espacio de AlertaSegura.</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>
+      <div class="field-heading"><label for="correo">Correo electrónico</label><span>Requerido</span></div>
+      <input id="correo" type="email" formControlName="correo" placeholder="nombre@correo.com" autocomplete="email" />
+      @if (loginForm.controls.correo.touched && loginForm.controls.correo.invalid) {
+        <small class="field-error">Ingresa un correo válido.</small>
+      }
+
+      <div class="field-heading"><label for="contrasena">Contraseña</label><button type="button" class="link-button" (click)="showComingSoon('La recuperación de contraseña')">¿La olvidaste?</button></div>
+      <input id="contrasena" type="password" formControlName="contrasena" placeholder="••••••••" autocomplete="current-password" />
+      @if (loginForm.controls.contrasena.touched && loginForm.controls.contrasena.invalid) {
+        <small class="field-error">La contraseña debe tener al menos 6 caracteres.</small>
+      }
+
+      <label class="remember-option"><input type="checkbox" [checked]="rememberSession" (change)="rememberSession = !rememberSession" /> <span>Recordar esta sesión</span></label>
+
+      @if (errorMessage) {
+        <div class="form-error" role="alert">{{ errorMessage }}</div>
+      }
+      @if (infoMessage) {
+        <div class="form-info" role="status">{{ infoMessage }}</div>
+      }
+
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Validando acceso...' : 'Entrar a mi cuenta' }}
+        @if (!loading) { <span aria-hidden="true">→</span> }
+      </button>
+    </form>
+
+    <p class="form-footer">¿Aún no tienes una cuenta? <button type="button" class="link-button" (click)="showComingSoon('El registro de usuarios')">Regístrate aquí</button></p>
+  </section>
+</main>

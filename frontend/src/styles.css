@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-indigo-ink-50: #eceafb;
+  --color-indigo-ink-100: #d9d4f7;
+  --color-indigo-ink-200: #b4a9ef;
+  --color-indigo-ink-300: #8e7ee7;
+  --color-indigo-ink-400: #6854de;
+  --color-indigo-ink-500: #4329d6;
+  --color-indigo-ink-600: #3521ab;
+  --color-indigo-ink-700: #281881;
+  --color-indigo-ink-800: #1b1056;
+  --color-indigo-ink-900: #0d082b;
+  --color-indigo-ink-950: #09061e;
+  --color-alert-blue: #4329d6;
+  --color-alert-blue-deep: #1b1056;
+  --color-alert-blue-soft: #eceafb;
+  --color-alert-coral: #d56b5b;
+  --color-alert-coral-soft: #f8e8e4;
+}
+
+:root {
+  --indigo-ink-50: #eceafb;
+  --indigo-ink-100: #d9d4f7;
+  --indigo-ink-200: #b4a9ef;
+  --indigo-ink-300: #8e7ee7;
+  --indigo-ink-400: #6854de;
+  --indigo-ink-500: #4329d6;
+  --indigo-ink-600: #3521ab;
+  --indigo-ink-700: #281881;
+  --indigo-ink-800: #1b1056;
+  --indigo-ink-900: #0d082b;
+  --indigo-ink-950: #09061e;
+  --alert-red: #d56b5b;
+  font-family: 'Manrope', sans-serif;
+  color: var(--indigo-ink-900);
+  background: var(--indigo-ink-50);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body { min-width: 320px; }
+button, input { font: inherit; }
