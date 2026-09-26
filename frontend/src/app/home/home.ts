@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
 
 interface EmergencyType {
   name: string;
@@ -23,7 +22,6 @@ interface RecentAlert {
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

@@ -1,0 +1,28 @@
+<header class="site-header">
+  <nav class="site-nav" aria-label="Navegación principal">
+    <a class="brand" routerLink="/" aria-label="AlertaSegura, ir al inicio">
+      <span class="brand-mark" aria-hidden="true">+</span>
+      <span>Alerta<strong>Segura</strong></span>
+    </a>
+
+    <div class="nav-links">
+      <a class="nav-link" routerLink="/">Inicio</a>
+      <a class="nav-link" href="#alertas">Alertas</a>
+      <a class="nav-link" routerLink="/mapa">Mapa</a>
+      <a class="nav-link" href="#prevencion">Prevención</a>
+      <a class="nav-link" href="#contactos">Contactos</a>
+    </div>
+
+    <div class="nav-actions">
+      @if (auth.session(); as session) {
+        <a class="profile-link" routerLink="/dashboard" aria-label="Abrir mi dashboard">
+          <span class="profile-avatar">{{ session.nombres.charAt(0) }}{{ session.apellidos.charAt(0) }}</span>
+          <span class="profile-name">{{ session.nombres }}</span>
+        </a>
+      } @else {
+        <a class="login-link" routerLink="/login">Iniciar sesión</a>
+        <a class="register-link" routerLink="/login">Registrarse</a>
+      }
+    </div>
+  </nav>
+</header>

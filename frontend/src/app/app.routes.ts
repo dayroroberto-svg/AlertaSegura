@@ -9,5 +9,6 @@ export const routes: Routes = [
   { path: 'inicio', component: Home },
   { path: 'login', component: Login },
   { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
+  { path: 'mapa', loadComponent: () => import('./map/map').then((module) => module.Map) },
   { path: '**', redirectTo: '' },
 ];

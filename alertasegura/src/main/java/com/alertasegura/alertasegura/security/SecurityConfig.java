@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/informacion-prevencion/**").permitAll()
                 .requestMatchers("/api/contactos-emergencia/**").permitAll()
+                .requestMatchers("/api/alertas/**").permitAll()
                 .anyRequest().authenticated()
             );
 

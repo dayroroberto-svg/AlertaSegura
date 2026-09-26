@@ -1,0 +1,152 @@
+:host {
+  display: block;
+}
+
+.site-header {
+  position: relative;
+  z-index: 10;
+  background: #142f49;
+  color: #f4f8fb;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(1280px, calc(100% - 3rem));
+  min-height: 5.5rem;
+  margin: auto;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -.04em;
+  text-decoration: none;
+}
+
+.brand strong {
+  color: #f09a8c;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border: 1px solid #9ab9cc;
+  border-radius: .65rem;
+  color: #fff;
+  font-size: 1.3rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: .2rem;
+}
+
+.nav-link,
+.login-link,
+.register-link {
+  color: #b7cddb;
+  font-size: .76rem;
+  text-decoration: none;
+}
+
+.profile-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  color: #fff;
+  font-size: .76rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 2px solid #f09a8c;
+  border-radius: 50%;
+  background: #234f70;
+  color: #fff;
+  font-size: .68rem;
+}
+
+.profile-link:hover,
+.profile-link:focus-visible {
+  color: #f09a8c;
+}
+
+.nav-link {
+  padding: .6rem .8rem;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible,
+.login-link:hover,
+.login-link:focus-visible,
+.register-link:hover,
+.register-link:focus-visible {
+  color: #f09a8c;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.login-link {
+  font-weight: 700;
+}
+
+.register-link {
+  padding: .78rem 1rem;
+  border-radius: .5rem;
+  background: #d56b5b;
+  color: #fff;
+  font-weight: 800;
+}
+
+.register-link:hover,
+.register-link:focus-visible {
+  background: #c45e51;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .nav-links {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .site-nav {
+    width: min(100% - 2rem, 1160px);
+    min-height: 4.5rem;
+  }
+
+  .login-link {
+    display: none;
+  }
+
+  .profile-name {
+    display: none;
+  }
+
+  .nav-actions {
+    gap: .6rem;
+  }
+
+  .register-link {
+    padding: .65rem .7rem;
+    font-size: .65rem;
+  }
+}

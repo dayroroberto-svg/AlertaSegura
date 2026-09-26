@@ -1,59 +1,49 @@
 <main class="dashboard-shell">
-  <aside class="sidebar">
-    <div class="brand"><span>+</span><strong>Alerta<span>Segura</span></strong></div>
-    <p class="nav-label">PLATAFORMA</p>
-    <nav>
-      <a class="active" routerLink="/dashboard"><span>⌂</span>Inicio</a>
-      <button type="button" class="disabled-nav"><span>◉</span>Alertas</button>
-      <button type="button" class="disabled-nav"><span>⌖</span>Mapa</button>
-      <button type="button" class="disabled-nav"><span>+</span>Reportar emergencia</button>
-      <button type="button" class="disabled-nav"><span>✦</span>Prevención</button>
-      <button type="button" class="disabled-nav"><span>☎</span>Contactos</button>
-    </nav>
-    <div class="sidebar-bottom"><p>Sesión protegida</p><span>JWT activo</span></div>
-  </aside>
-
   <section class="content">
     <header class="topbar">
-      <div><p class="eyebrow">SÁBADO, 26 DE SEPTIEMBRE</p><h1>Buenos días, {{ auth.session()?.nombres || 'ciudadano' }}.</h1></div>
-      <button class="avatar" type="button" (click)="auth.logout()" [attr.aria-label]="'Cerrar sesión de ' + auth.session()?.nombres">{{ auth.session()?.nombres?.charAt(0) }}{{ auth.session()?.apellidos?.charAt(0) }}</button>
+      <div><p class="eyebrow">CENTRO DE CONTROL CIUDADANO</p><h1>Buenos días, {{ auth.session()?.nombres || 'ciudadano' }}.</h1><p class="dashboard-intro">Aquí tienes todo lo que necesitas para mantenerte informado y ayudar a tu comunidad.</p></div>
+      <div class="topbar-actions">
+        <button class="logout-button" type="button" (click)="auth.logout()">Cerrar sesión</button>
+        <span class="avatar" [attr.aria-label]="'Perfil de ' + auth.session()?.nombres">{{ auth.session()?.nombres?.charAt(0) }}{{ auth.session()?.apellidos?.charAt(0) }}</span>
+      </div>
     </header>
 
-    <div class="welcome-card">
-      <div><p class="eyebrow">CENTRO DE CONTROL CIUDADANO</p><h2>Tu información,<br /><em>lista para actuar.</em></h2><p>Consulta alertas cercanas o registra un reporte para ayudar a tu comunidad.</p></div>
-      <div class="radar" aria-hidden="true"><span></span><span></span><span></span><b>●</b></div>
-    </div>
-
-    <section class="section-heading"><div><p class="eyebrow">DE UN VISTAZO</p><h2>Tu actividad</h2></div><span class="status-pill"><i></i> Todo operativo</span></section>
-    <div class="metric-grid">
-      <article><span class="metric-icon green">⌁</span><p>Reportes enviados</p><strong>0</strong><small>Comienza registrando un incidente</small></article>
-      <article><span class="metric-icon amber">◉</span><p>Alertas activas</p><strong>—</strong><small>Consulta el mapa de alertas</small></article>
-      <article><span class="metric-icon blue">✦</span><p>Guías preventivas</p><strong>12</strong><small>Contenido disponible para ti</small></article>
-    </div>
-
-    <section class="dashboard-section">
-      <div class="section-heading compact"><div><p class="eyebrow">VIGILANCIA CIUDADANA</p><h2>Emergencias monitoreadas</h2></div><span class="section-note">12 alertas activas</span></div>
-      <div class="emergency-grid">
-        @for (item of emergencyTypes; track item.name) {
-          <article class="emergency-card" [class]="item.tone"><div class="card-top"><span class="emergency-icon">{{ item.icon }}</span><b>{{ item.count }}</b></div><h3>{{ item.name }}</h3><p>{{ item.description }}</p><button type="button">Consultar <span>→</span></button></article>
+    <section class="dashboard-section overview-section">
+      <div class="section-heading compact"><div><p class="eyebrow">DE UN VISTAZO</p><h2>Tu actividad</h2></div><span class="status-pill"><i></i> Todo operativo</span></div>
+      <div class="metric-grid metric-grid-four">
+        @for (metric of dashboardMetrics; track metric.label) {
+          <article class="metric-card"><span [class]="'metric-icon ' + metric.tone">{{ metric.icon }}</span><p>{{ metric.label }}</p><strong>{{ metric.value }}</strong><small>{{ metric.detail }}</small></article>
         }
       </div>
     </section>
 
-    <section class="dashboard-section alerts-section">
-      <div class="section-heading compact"><div><p class="eyebrow">ACTIVIDAD RECIENTE</p><h2>Últimas alertas</h2></div><button type="button" class="view-button">Ver todas <span>→</span></button></div>
-      <div class="alerts-list">
-        @for (alert of recentAlerts; track alert.title) {
-          <article class="alert-row"><span class="alert-symbol" [class]="alert.tone">{{ alert.type === 'Sismo' ? '⌁' : alert.type === 'Incendio' ? '✦' : '≈' }}</span><div class="alert-main"><small>{{ alert.type }}</small><h3>{{ alert.title }}</h3><p>{{ alert.location }}</p></div><div class="alert-time"><span>{{ alert.time }}</span><b [class]="alert.tone">{{ alert.risk }}</b></div><button class="row-arrow" type="button">↗</button></article>
-        }
-      </div>
-    </section>
+    <section class="dashboard-panels">
+      <article class="dashboard-panel nearby-panel">
+        <div class="panel-heading"><div><p class="eyebrow">VIGILANCIA CIUDADANA</p><h2>Alertas cercanas</h2></div><a href="#alertas">Ver todas <span>→</span></a></div>
+        <div class="panel-list">
+          @for (alert of recentAlerts; track alert.title) {
+            <div class="nearby-alert"><span [class]="'alert-symbol ' + alert.tone">{{ alert.type === 'Sismo' ? '⌁' : alert.type === 'Incendio' ? '✦' : '≈' }}</span><div><small>{{ alert.type }} · {{ alert.time }}</small><strong>{{ alert.title }}</strong><span>{{ alert.location }}</span></div><b [class]="alert.tone">{{ alert.risk }}</b></div>
+          }
+        </div>
+      </article>
 
-    <section class="process-panel dashboard-section">
-      <div><p class="eyebrow">ASÍ FUNCIONA</p><h2>De un reporte a una comunidad informada.</h2><p>La seguridad empieza cuando compartimos lo que sabemos.</p></div>
-      <div class="process-mini"><div><b>01</b><strong>Reportar</strong><small>Un ciudadano informa.</small></div><div><b>02</b><strong>Verificar</strong><small>El equipo revisa.</small></div><div><b>03</b><strong>Informar</strong><small>La comunidad actúa.</small></div></div>
-    </section>
+      <article class="dashboard-panel reports-panel">
+        <div class="panel-heading"><div><p class="eyebrow">SEGUIMIENTO</p><h2>Mis reportes</h2></div><a href="#reportar">Reportar <span>+</span></a></div>
+        <div class="panel-list report-list">
+          @for (report of reports; track report.code) {
+            <div class="report-item"><div><strong>{{ report.code }}</strong><span>{{ report.title }}</span></div><b [class]="report.tone">{{ report.status }}</b></div>
+          }
+        </div>
+      </article>
 
-    <section class="quick-actions"><button type="button"><span>+</span><div><strong>Registrar un reporte</strong><small>Informa sobre una emergencia en tu zona</small></div><b>→</b></button><button type="button"><span>◉</span><div><strong>Explorar alertas</strong><small>Revisa situaciones activas cerca de ti</small></div><b>→</b></button></section>
+      <article class="dashboard-panel notifications-panel">
+        <div class="panel-heading"><div><p class="eyebrow">ACTUALIZACIONES</p><h2>Notificaciones</h2></div><span class="notification-count">04</span></div>
+        <div class="panel-list notification-list">
+          @for (notification of notifications; track notification.title) {
+            <div class="notification-item"><span class="notification-dot" [class]="notification.tone"></span><div><strong>{{ notification.title }}</strong><p>{{ notification.message }}</p><small>{{ notification.time }}</small></div></div>
+          }
+        </div>
+      </article>
+    </section>
   </section>
 </main>
