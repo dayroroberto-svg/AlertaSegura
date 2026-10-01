@@ -98,3 +98,13 @@
     - Se añadió el botón `Cerrar sesión` en el Dashboard conectado al cierre de sesión JWT.
     - Se implementó el registro de usuarios ciudadanos desde la ruta `/registro`, conectado al endpoint de autenticación del backend.
     - Se reforzaron las reglas de registro: teléfono obligatorio de 9 dígitos, contraseña con número y carácter especial, y respuesta HTTP controlada para correos duplicados.
+- **2026-09-30**:
+  - Se creó el formulario vertical de registro de usuarios con nombres, apellidos, correo electrónico, teléfono, contraseña y confirmación de contraseña.
+  - Se conectó el formulario con `POST /api/auth/registro` y se añadieron la ruta `/registro`, el enlace desde Login y el enlace desde el header público.
+  - Se configuró la pantalla de registro con fondo blanco y sin header ni footer.
+  - Se añadió la confirmación visual `Registro exitoso` y el botón `Ir al inicio de sesión` después de crear la cuenta.
+  - Se estableció el teléfono como obligatorio y limitado a exactamente 9 dígitos.
+  - Se estableció que la contraseña debe tener mínimo 6 caracteres, un número y un carácter especial.
+  - Se renombró el último campo como `Confirmar contraseña` y se mantuvo la validación de coincidencia.
+  - Se añadió la advertencia `El correo ya está registrado` al intentar crear una cuenta con un correo existente.
+  - Se corrigió la actualización inmediata de los estados de carga, error y confirmación mediante signals de Angular.
