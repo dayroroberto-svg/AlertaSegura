@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { ApiResponse, LoginRequest, UserSession } from './auth.models';
+import { ApiResponse, LoginRequest, RegisterRequest, UserSession } from './auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -21,6 +21,10 @@ export class AuthService {
     return this.http
       .post<ApiResponse<UserSession>>(`${this.apiUrl}/login`, credentials)
       .pipe(tap((response) => this.saveSession(response.data, remember)));
+  }
+
+  register(data: RegisterRequest): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${this.apiUrl}/registro`, data);
   }
 
   logout(): void {

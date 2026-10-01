@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { SiteFooter } from './shared/site-footer/site-footer';
 import { SiteHeader } from './shared/site-header/site-header';
 
@@ -10,4 +11,12 @@ import { SiteHeader } from './shared/site-header/site-header';
   templateUrl: './app.html',
 })
 export class App {
+  readonly showChrome = signal(true);
+
+  constructor(router: Router) {
+    this.showChrome.set(router.url !== '/registro');
+    router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event) => this.showChrome.set(event.urlAfterRedirects !== '/registro'));
+  }
 }

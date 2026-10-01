@@ -63,7 +63,7 @@ public class AuthService {
 
     public void registrarUsuario(RegistroUsuarioRequest request) {
         if (usuarioRepository.existsByCorreo(request.getCorreo())) {
-            throw new RuntimeException("El correo ya está registrado");
+            throw new IllegalArgumentException("El correo ya está registrado");
         }
 
         Rol rolCiudadano = rolRepository.findByNombre("CIUDADANO")

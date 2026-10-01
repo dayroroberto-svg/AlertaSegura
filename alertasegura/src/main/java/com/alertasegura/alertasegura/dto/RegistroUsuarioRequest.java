@@ -23,8 +23,10 @@ public class RegistroUsuarioRequest {
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, max = 100, message = "La contraseña debe tener entre 6 y 100 caracteres")
+    @Pattern(regexp = "^(?=.*\\d)(?=.*[^a-zA-Z0-9]).+$", message = "La contraseña debe incluir un número y un carácter especial")
     private String contrasena;
 
-    @Size(max = 20, message = "El teléfono no puede exceder 20 caracteres")
+    @NotBlank(message = "El teléfono es obligatorio")
+    @Pattern(regexp = "^\\d{9}$", message = "El teléfono debe tener exactamente 9 dígitos")
     private String telefono;
 }
