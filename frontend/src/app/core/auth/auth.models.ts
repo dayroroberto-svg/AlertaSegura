@@ -18,3 +18,11 @@ export interface LoginRequest {
   correo: string;
   contrasena: string;
 }
+
+export interface RegisterRequest {
+  nombres: string;
+  apellidos: string;
+  correo: string;
+  contrasena: string;
+  telefono: string;
+}

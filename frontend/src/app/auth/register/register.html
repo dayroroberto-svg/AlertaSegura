@@ -1,0 +1,64 @@
+<main class="register-page">
+  <section class="form-panel" aria-labelledby="register-title">
+    <div class="form-heading">
+      <p class="eyebrow">ALERTASEGURA</p>
+      <h1 id="register-title">Crear cuenta</h1>
+      <p>Completa tus datos para comenzar.</p>
+    </div>
+
+    @if (registered()) {
+      <div class="success-card" role="status">
+        <strong>Registro exitoso</strong>
+        <p>Tu cuenta fue creada correctamente. Ya puedes iniciar sesión.</p>
+        <button type="button" (click)="goToLogin()">Ir al inicio de sesión <span aria-hidden="true">→</span></button>
+      </div>
+    } @else {
+      <form [formGroup]="registerForm" (ngSubmit)="submit()" novalidate>
+        <div class="field-row">
+          <div>
+            <div class="field-heading"><label for="nombres">Nombres</label><span>Requerido</span></div>
+            <input id="nombres" type="text" formControlName="nombres" placeholder="Tus nombres" autocomplete="given-name" />
+            @if (registerForm.controls.nombres.touched && registerForm.controls.nombres.invalid) { <small class="field-error">Ingresa tus nombres.</small> }
+          </div>
+          <div>
+            <div class="field-heading"><label for="apellidos">Apellidos</label><span>Requerido</span></div>
+            <input id="apellidos" type="text" formControlName="apellidos" placeholder="Tus apellidos" autocomplete="family-name" />
+            @if (registerForm.controls.apellidos.touched && registerForm.controls.apellidos.invalid) { <small class="field-error">Ingresa tus apellidos.</small> }
+          </div>
+        </div>
+
+        <div class="field-heading"><label for="correo">Correo electrónico</label><span>Requerido</span></div>
+        <input id="correo" type="email" formControlName="correo" placeholder="nombre@correo.com" autocomplete="email" />
+        @if (registerForm.controls.correo.touched && registerForm.controls.correo.invalid) { <small class="field-error">Ingresa un correo válido.</small> }
+
+        <div class="field-heading"><label for="telefono">Teléfono</label><span>Requerido</span></div>
+        <input id="telefono" type="tel" inputmode="numeric" maxlength="9" formControlName="telefono" placeholder="999999999" autocomplete="tel" />
+        @if (registerForm.controls.telefono.touched && registerForm.controls.telefono.invalid) { <small class="field-error">Ingresa un número de 9 dígitos.</small> }
+
+        <div class="field-row">
+          <div>
+            <div class="field-heading"><label for="contrasena">Contraseña</label><span>Requerido</span></div>
+            <input id="contrasena" type="password" formControlName="contrasena" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+            @if (registerForm.controls.contrasena.touched && registerForm.controls.contrasena.invalid) { <small class="field-error">Usa mínimo 6 caracteres, un número y un carácter especial.</small> }
+          </div>
+          <div>
+            <div class="field-heading"><label for="confirmarContrasena">Confirmar contraseña</label><span>Requerido</span></div>
+            <input id="confirmarContrasena" type="password" formControlName="confirmarContrasena" placeholder="Repite tu contraseña" autocomplete="new-password" />
+          </div>
+        </div>
+        @if (registerForm.touched && registerForm.hasError('passwordsMismatch')) { <small class="field-error">Las contraseñas no coinciden.</small> }
+
+        @if (errorMessage()) { <div class="form-error" role="alert">{{ errorMessage() }}</div> }
+
+        <button type="submit" [disabled]="loading()">
+          {{ loading() ? 'Creando cuenta...' : 'Crear mi cuenta' }}
+          @if (!loading()) { <span aria-hidden="true">→</span> }
+        </button>
+      </form>
+    }
+
+    @if (!registered()) {
+      <p class="form-footer">¿Ya tienes una cuenta? <button type="button" class="link-button" (click)="goToLogin()">Inicia sesión</button></p>
+    }
+  </section>
+</main>

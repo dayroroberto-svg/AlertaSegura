@@ -49,4 +49,8 @@ export class Login {
     this.infoMessage = `${feature} estará disponible en la siguiente etapa.`;
     this.errorMessage = '';
   }
+
+  goToRegister(): void {
+    void this.router.navigateByUrl('/registro');
+  }
 }

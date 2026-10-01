@@ -52,7 +52,13 @@
    - [x] Vista `/mapa` con Leaflet y OpenStreetMap.
    - [x] Marcadores usando latitud y longitud de `GET /api/alertas`.
    - [x] Filtros por nivel de riesgo y ubicación del usuario.
-   - [x] Navegación desde Inicio y Dashboard.
+    - [x] Navegación desde Inicio y Dashboard.
+7. **Implementar registro de usuarios**:
+   - [x] Formulario Angular conectado a `POST /api/auth/registro`.
+   - [x] Validación de datos, confirmación de contraseña y manejo de errores.
+   - [x] Ruta `/registro` y enlaces desde Login y header público.
+   - [x] Teléfono obligatorio de 9 dígitos y contraseña con número y carácter especial.
+   - [x] Advertencia controlada para correos ya registrados.
 
 ---
 
@@ -89,4 +95,6 @@
    - Se corrigió el combo de tipos del mapa para mostrar siempre las diez categorías, incluso cuando no existen alertas activas.
    - Se conectó el header al estado de autenticación: después del login muestra el perfil y lo enlaza al Dashboard.
    - Se reorganizó el Dashboard con bienvenida, cuatro métricas y tres paneles: alertas cercanas, mis reportes y notificaciones.
-   - Se añadió el botón `Cerrar sesión` en el Dashboard conectado al cierre de sesión JWT.
+    - Se añadió el botón `Cerrar sesión` en el Dashboard conectado al cierre de sesión JWT.
+    - Se implementó el registro de usuarios ciudadanos desde la ruta `/registro`, conectado al endpoint de autenticación del backend.
+    - Se reforzaron las reglas de registro: teléfono obligatorio de 9 dígitos, contraseña con número y carácter especial, y respuesta HTTP controlada para correos duplicados.
