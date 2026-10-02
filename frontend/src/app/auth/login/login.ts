@@ -45,11 +45,6 @@ export class Login {
     });
   }
 
-  showComingSoon(feature: string): void {
-    this.infoMessage = `${feature} estará disponible en la siguiente etapa.`;
-    this.errorMessage = '';
-  }
-
   goToRegister(): void {
     void this.router.navigateByUrl('/registro');
   }

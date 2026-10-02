@@ -6,6 +6,8 @@
 
 > **REGLA DE PRIORIDAD**: Si el código actual contradice este documento, verifica el código y actualiza el documento. Nunca inventes funcionalidades, pruebas o configuraciones que no hayan sido comprobadas.
 
+> **REGLA DE COMMITS**: No realizar `git commit`, `git push` ni publicar cambios en GitHub sin permiso explícito del usuario. Antes de considerar una tarea terminada, esperar el visto bueno del usuario.
+
 ## Información General
 - **Ruta de Backend**: `<raiz-del-repositorio>/alertasegura`
 - **Ruta de Frontend**: `<raiz-del-repositorio>/frontend`
@@ -69,7 +71,7 @@
   - Se implementó la base de autenticación Angular: `AuthService`, interceptor JWT, guard, login reactivo y dashboard protegido.
   - Se creó la vista pública inicial con contenido estático y navegación visual para los módulos futuros.
   - Se integró Tailwind CSS 4 y se actualizó la identidad visual a azul petróleo y rojo coral.
-  - Se ajustó el login con recordar sesión, recuperación y registro informativos, y se reforzó la responsividad del dashboard y la claridad de la vista pública.
+  - Se ajustó el login con recordar sesión y registro informativos, y se reforzó la responsividad del dashboard y la claridad de la vista pública.
   - Se actualizó la identidad del login con el nombre AlertaSegura y la paleta azul petróleo/coral.
   - Se amplió el dashboard autenticado con estado del sistema, estadísticas, categorías, alertas recientes y flujo de atención; los datos son actualmente estáticos.
   - Se actualizó la barra lateral con los nombres definidos para cada ventana de la plataforma.
