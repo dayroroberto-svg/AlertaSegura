@@ -28,7 +28,7 @@
         <small class="field-error">Ingresa un correo válido.</small>
       }
 
-      <div class="field-heading"><label for="contrasena">Contraseña</label><button type="button" class="link-button" (click)="showComingSoon('La recuperación de contraseña')">¿La olvidaste?</button></div>
+      <div class="field-heading"><label for="contrasena">Contraseña</label></div>
       <input id="contrasena" type="password" formControlName="contrasena" placeholder="••••••••" autocomplete="current-password" />
       @if (loginForm.controls.contrasena.touched && loginForm.controls.contrasena.invalid) {
         <small class="field-error">La contraseña debe tener al menos 6 caracteres.</small>

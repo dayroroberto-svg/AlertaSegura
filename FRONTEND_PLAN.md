@@ -26,7 +26,7 @@ Este documento detalla el plan de implementación del Frontend para el sistema A
 ### Fase 13: Módulo de Autenticación (Pendiente)
 - [x] Componente de Login (UI moderna, validación de formularios reactivos).
 - [x] Redirección tras un login exitoso al Dashboard.
-- [x] Opción de recordar sesión y estados visuales para recuperación/registro pendientes.
+- [x] Opción de recordar sesión y estados visuales para el registro.
 
 ### Fase 14: Vista Principal / Dashboard (Pendiente)
 - [x] Layout principal con Barra Lateral de navegación (Sidebar).
