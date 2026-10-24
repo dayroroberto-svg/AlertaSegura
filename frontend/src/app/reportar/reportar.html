@@ -1,0 +1,171 @@
+<main class="reportar-page">
+  <section class="form-section section-wrap">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">REPORTAR EMERGENCIA</p>
+        <h2>Reporta una <em>emergencia.</em></h2>
+      </div>
+    </div>
+
+    @if (!auth.session()) {
+      <div class="auth-invite">
+        <div class="invite-icon">🛡</div>
+        <h3>Inicia sesión para reportar</h3>
+        <p>Para enviar reportes de emergencia y que otros usuarios los vean, necesitas iniciar sesión o crear una cuenta.</p>
+        <div class="invite-actions">
+          <a routerLink="/login" class="primary-button">Iniciar sesión</a>
+          <a routerLink="/registro" class="secondary-button">Crear cuenta</a>
+        </div>
+      </div>
+    } @else if (loading) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Enviando reporte...</p>
+      </div>
+    } @else if (success) {
+      <div class="success-state">
+        <i class="check-icon">✓</i>
+        <h3>Reporte enviado correctamente</h3>
+        <p>Tu reporte ha sido registrado y será revisado por el equipo.</p>
+        @if (evidenceError) {
+          <p class="error-message">El reporte se registró, pero no se pudo adjuntar la imagen.</p>
+        }
+        <button class="primary-button" type="button" (click)="goBack()">Volver al inicio</button>
+      </div>
+    } @else if (error) {
+      <div class="error-state">
+        <i class="error-icon">✗</i>
+        <h3>Error al enviar el reporte</h3>
+        <p>{{ errorMessage || 'Hubo un problema al procesar tu reporte. Por favor, intenta nuevamente.' }}</p>
+        <button class="primary-button" type="button" (click)="retry()">Reintentar</button>
+      </div>
+    } @else {
+      <form (ngSubmit)="onSubmit()" class="report-form">
+        @if (formError) {
+          <p class="error-message" role="alert">{{ formError }}</p>
+        }
+        <div class="form-group">
+          <label for="titulo">Título <span class="required">*</span></label>
+          <input
+            type="text"
+            id="titulo"
+            placeholder="Ej: Incendio en zona residencial"
+            required
+            [(ngModel)]="form.titulo"
+            name="titulo"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción <span class="required">*</span></label>
+          <textarea
+            id="descripcion"
+            placeholder="Describe qué sucedió, ubicación aproximada, cantidad de personas involucradas, etc."
+            required
+            [(ngModel)]="form.descripcion"
+            name="descripcion"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="categoria">Categoría <span class="required">*</span></label>
+          <select
+            id="categoria"
+            required
+            [(ngModel)]="form.categoria"
+            name="categoria"
+          >
+            <option value="" disabled>Selecciona una categoría</option>
+            @for (cat of disasterTypes; track cat) {
+            <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="nivelRiesgo">Nivel de gravedad <span class="required">*</span></label>
+          <select
+            id="nivelRiesgo"
+            required
+            [(ngModel)]="form.nivelRiesgo"
+            name="nivelRiesgo"
+          >
+            <option value="" disabled>Selecciona nivel de gravedad</option>
+            @for (risk of riskLevels; track risk) {
+            <option [value]="risk">{{ risk }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Ubicación <span class="required">*</span></label>
+          <div class="location-inputs">
+            <div class="form-group">
+              <label for="latitud">Latitud</label>
+              <input
+                type="number"
+                id="latitud"
+                [(ngModel)]="form.latitud"
+                name="latitud"
+                step="any"
+                min="-90"
+                max="90"
+                placeholder="Ej: -12.0464"
+              />
+              <button type="button" class="secondary-button small" (click)="locateUser()">Usar GPS</button>
+            </div>
+            <div class="form-group">
+              <label for="longitud">Longitud</label>
+              <input
+                type="number"
+                id="longitud"
+                [(ngModel)]="form.longitud"
+                name="longitud"
+                step="any"
+                min="-180"
+                max="180"
+                placeholder="Ej: -77.0428"
+              />
+            </div>
+          </div>
+          @if (locationError) {
+            <p class="error-message">No se pudo obtener la ubicación. Presiona "Usar GPS" o ingresa las coordenadas manualmente.</p>
+          }
+        </div>
+
+        <div class="form-group">
+          <label>Imagen (opcional)</label>
+          <div class="image-upload">
+            <input
+              #imagenInput
+              type="file"
+              id="imagen"
+              accept="image/jpeg,image/png,image/webp"
+              (change)="onFileChange($event)"
+            />
+            <label for="imagen">
+              <span class="upload-icon">📤</span>
+              <span>Seleccionar imagen</span>
+            </label>
+            @if (hasImage) {
+            <div class="preview">
+              <img [src]="getImageUrl()" alt="Vista previa" />
+              <button type="button" class="secondary-button small" (click)="removeImage()">Remover</button>
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="review-notice">
+          <span class="review-icon">🛡</span>
+          <p><strong>Revisión previa:</strong> Tu reporte será revisado por nuestro equipo antes de publicarse como alerta oficial. Recibirás una notificación cuando sea procesado.</p>
+        </div>
+
+        <button type="submit" class="primary-button" [disabled]="loading">
+          <span>Enviar Reporte</span>
+        </button>
+      </form>
+    }
+  </section>
+</main>

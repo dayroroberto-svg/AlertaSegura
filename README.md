@@ -59,7 +59,9 @@ Base de datos: alertasegura
 Usuario: root
 ```
 
-Primero ejecuta `database/schema.sql` y después `database/data.sql` en MySQL.
+Las credenciales de la base de datos y el secreto JWT no se almacenan en el repositorio. El perfil `local` está activado por defecto en `application.properties` y lee `application-local.properties` (copia de `application-local.properties.example`). En otros entornos, define `spring.profiles.active` según corresponda y configura las variables `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` y `JWT_SECRET`.
+
+Primero ejecuta `database/schema.sql` y después `database/data.sql` en MySQL. Para bases de datos creadas con versiones anteriores, aplica también los scripts de `database/migrations/`.
 
 ## Ejecutar el backend
 

@@ -8,10 +8,12 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -34,14 +36,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/informacion-prevencion/**").permitAll()
                 .requestMatchers("/api/contactos-emergencia/**").permitAll()
-                .requestMatchers("/api/alertas/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/alertas", "/api/alertas/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                 .anyRequest().authenticated()
             );
 

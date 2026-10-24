@@ -7,7 +7,9 @@ import com.alertasegura.alertasegura.exception.ResourceNotFoundException;
 import com.alertasegura.alertasegura.repository.NotificacionRepository;
 import com.alertasegura.alertasegura.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ public class NotificacionService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Transactional(readOnly = true)
     public List<NotificacionResponse> obtenerMisNotificaciones(String correoUsuario) {
         Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
@@ -29,12 +32,13 @@ public class NotificacionService {
                 .stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    @Transactional
     public void marcarComoLeida(Long idNotificacion, String correoUsuario) {
         Notificacion notificacion = notificacionRepository.findById(idNotificacion)
                 .orElseThrow(() -> new ResourceNotFoundException("Notificación no encontrada"));
         
         if (!notificacion.getUsuario().getCorreo().equals(correoUsuario)) {
-            throw new RuntimeException("No tiene permisos para modificar esta notificación");
+            throw new AccessDeniedException("No tiene permisos para modificar esta notificación");
         }
         
         notificacion.setLeida(true);

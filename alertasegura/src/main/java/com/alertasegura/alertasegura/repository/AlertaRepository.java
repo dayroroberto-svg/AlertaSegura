@@ -14,5 +14,5 @@ public interface AlertaRepository extends JpaRepository<Alerta, Long> {
     List<Alerta> findByNivelRiesgoNombre(String nivelNombre);
     List<Alerta> findByUbicacionDistrito(String distrito);
     List<Alerta> findAllByOrderByFechaPublicacionDesc();
-    List<Alerta> findByEstadoAlertaNombreNotOrderByFechaPublicacionDesc(String estadoExcluido);
+    List<Alerta> findByEstadoAlertaNombreInOrderByFechaPublicacionDesc(List<String> estados);
 }

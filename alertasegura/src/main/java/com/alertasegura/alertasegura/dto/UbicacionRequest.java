@@ -18,6 +18,7 @@ public class UbicacionRequest {
     @Size(max = 100)
     private String distrito;
 
+    @Size(max = 255)
     private String direccion;
 
     @DecimalMin(value = "-90.0", message = "Latitud mínima: -90")
@@ -28,5 +29,11 @@ public class UbicacionRequest {
     @DecimalMax(value = "180.0", message = "Longitud máxima: 180")
     private BigDecimal longitud;
 
+    @Size(max = 255)
     private String referencia;
+
+    @AssertTrue(message = "La latitud y la longitud deben enviarse juntas")
+    public boolean isCoordenadasCompletas() {
+        return (latitud == null) == (longitud == null);
+    }
 }

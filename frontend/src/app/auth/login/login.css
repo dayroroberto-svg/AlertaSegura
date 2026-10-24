@@ -108,7 +108,9 @@ label { color: #263c3b; font-size: .82rem; font-weight: 750; }
 input { width: 100%; box-sizing: border-box; padding: 1rem 1.1rem; border: 1px solid #d6e0dc; border-radius: .7rem; outline: none; background: #fff; color: #142827; font: inherit; transition: border-color .2s, box-shadow .2s; }
 input:focus { border-color: #28b794; box-shadow: 0 0 0 4px rgba(40, 183, 148, .12); }
 .field-error, .form-error { color: #bd3f48; font-size: .75rem; }
-.form-error { padding: .8rem 1rem; border-radius: .6rem; background: #fff0f0; }
+.form-error { padding: .8rem 1rem; border-radius: .6rem; background: #fff0f0; line-height: 1.5; }
+.form-error .link-button { display: inline; margin: 0 0 0 .35rem; padding: 0; border: 0; background: transparent; color: #bd3f48; font-size: .75rem; font-weight: 750; text-decoration: underline; cursor: pointer; }
+.form-error .link-button:hover { color: #234f70; }
 .form-info { padding: .8rem 1rem; border-radius: .6rem; background: #e8f0f7; color: #315675; font-size: .75rem; }
 .link-button { padding: 0; border: 0; background: transparent; color: #c45e51; font: inherit; font-size: .75rem; font-weight: 750; cursor: pointer; }
 .remember-option { display: flex; align-items: center; gap: .5rem; margin-top: .65rem; color: #71817f; font-size: .75rem; font-weight: 500; cursor: pointer; }

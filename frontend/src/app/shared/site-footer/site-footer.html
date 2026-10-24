@@ -10,18 +10,23 @@
 
     <nav class="footer-column" aria-label="Enlaces de plataforma">
       <h2>Plataforma</h2>
-      <a href="#alertas">Alertas</a>
-      <a href="#mapa-de-emergencias">Mapa de emergencias</a>
-      <a href="#prevencion">Prevención</a>
-      <a href="#contactos">Contactos</a>
+      <a routerLink="/alertas">Alertas</a>
+      <a routerLink="/mapa">Mapa de emergencias</a>
+      <a routerLink="/prevencion">Prevención</a>
+      <a routerLink="/contactos">Contactos</a>
     </nav>
 
     <nav class="footer-column" aria-label="Enlaces ciudadanos">
       <h2>Ciudadanos</h2>
-      <a href="#reportar-emergencia">Reportar emergencia</a>
-      <a href="#mis-reportes">Mis reportes</a>
-      <a href="#notificaciones">Notificaciones</a>
-      <a href="#mi-cuenta">Mi cuenta</a>
+      <a routerLink="/reportar">Reportar</a>
+      @if (auth.session()) {
+      <a routerLink="/mis-reportes">Mis reportes</a>
+      <a routerLink="/notificaciones">Notificaciones</a>
+      <a routerLink="/mi-cuenta">Mi cuenta</a>
+      } @else {
+      <a routerLink="/login">Iniciar sesión</a>
+      <a routerLink="/registro">Crear cuenta</a>
+      }
     </nav>
   </div>
   <div class="footer-bottom">

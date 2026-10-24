@@ -32,6 +32,7 @@ public class VerificacionController {
     }
 
     @GetMapping("/reporte/{idReporte}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<ApiResponse<List<VerificacionResponse>>> obtenerPorReporte(@PathVariable Long idReporte) {
         return ResponseEntity.ok(ApiResponse.success(verificacionService.obtenerPorReporte(idReporte)));
     }
