@@ -52,7 +52,7 @@ public class JwtTokenProvider {
         try {
             Jwts.parser().verifyWith(key()).build().parseSignedClaims(token);
             return true;
-        } catch (MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
+        } catch (JwtException | IllegalArgumentException ex) {
             // log error
         }
         return false;

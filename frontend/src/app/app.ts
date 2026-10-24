@@ -14,9 +14,9 @@ export class App {
   readonly showChrome = signal(true);
 
   constructor(router: Router) {
-    this.showChrome.set(router.url !== '/registro');
+    this.showChrome.set(!['/login', '/registro'].includes(router.url));
     router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event) => this.showChrome.set(event.urlAfterRedirects !== '/registro'));
+      .subscribe((event) => this.showChrome.set(!['/login', '/registro'].includes(event.urlAfterRedirects)));
   }
 }

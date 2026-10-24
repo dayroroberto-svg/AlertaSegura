@@ -6,6 +6,9 @@
       <p>Consulta las alertas activas y ubica rápidamente las zonas que requieren atención.</p>
     </div>
     <button class="location-button" type="button" (click)="locateUser()">⌖ Usar mi ubicación</button>
+    @if (locationError()) {
+      <p class="error-message" role="alert">No se pudo obtener tu ubicación. Verifica los permisos del navegador.</p>
+    }
   </header>
 
   <section class="map-toolbar" aria-label="Filtros del mapa">
@@ -19,7 +22,7 @@
     <label class="category-filter">Tipo de desastre
       <select [value]="selectedCategory()" (change)="setCategory($any($event.target).value)">
         @for (category of categories(); track category) {
-          <option [value]="category">{{ categoryLabel(category) }}</option>
+        <option [value]="category">{{ categoryLabel(category) }}</option>
         }
       </select>
     </label>
@@ -30,36 +33,41 @@
     <div class="map-card">
       <div id="emergency-map" aria-label="Mapa geolocalizado de emergencias"></div>
       @if (loading()) {
-        <div class="map-message">Cargando alertas...</div>
+      <div class="map-message">Cargando alertas...</div>
       } @else if (error()) {
-        <div class="map-message error-message">No se pudo conectar con el servicio de alertas.</div>
+      <div class="map-message error-message">No se pudo conectar con el servicio de alertas.</div>
       } @else if (!filteredAlerts().length) {
-        <div class="map-message">No hay alertas para estos filtros.</div>
+      <div class="map-message">No hay alertas para estos filtros.</div>
       }
     </div>
 
     <aside class="active-alerts" aria-label="Alertas activas">
       <div class="active-alerts-heading">
-        <div><p class="eyebrow">MONITOREO EN TIEMPO REAL</p><h2>Alertas activas</h2></div>
+        <div>
+          <p class="eyebrow">MONITOREO EN TIEMPO REAL</p>
+          <h2>Alertas activas</h2>
+        </div>
         <span>{{ filteredAlerts().length }}</span>
       </div>
       <div class="alert-list">
         @for (alert of filteredAlerts(); track alert.idAlerta) {
-          <article class="alert-item">
-            <div class="alert-item-top">
-              <span [class]="'status-indicator ' + statusClass(alert.estadoAlerta)"><i></i>{{ statusLabel(alert.estadoAlerta) }}</span>
-              <span [class]="'risk-label ' + normalizedRisk(alert.nivelRiesgo)">{{ riskLabel(alert.nivelRiesgo) }}</span>
-            </div>
-            <h3>{{ alert.titulo }}</h3>
-            <p>{{ alert.categoria }} · {{ alert.distrito || 'Ubicación no disponible' }}</p>
-            <small>{{ alert.direccion || 'Dirección no disponible' }}</small>
-          </article>
+        <article class="alert-item">
+          <div class="alert-item-top">
+            <span [class]="'status-indicator ' + statusClass(alert.estadoAlerta)"><i></i>{{
+              statusLabel(alert.estadoAlerta) }}</span>
+            <span [class]="'risk-label ' + normalizedRisk(alert.nivelRiesgo)">{{ riskLabel(alert.nivelRiesgo) }}</span>
+          </div>
+          <h3>{{ alert.titulo }}</h3>
+          <p>{{ alert.categoria }} · {{ alert.distrito || 'Ubicación no disponible' }}</p>
+          <small>{{ alert.direccion || 'Dirección no disponible' }}</small>
+        </article>
         } @empty {
-          <p class="empty-alerts">No hay alertas activas que coincidan con los filtros.</p>
+        <p class="empty-alerts">No hay alertas activas que coincidan con los filtros.</p>
         }
       </div>
     </aside>
   </section>
 
-  <p class="map-note"><strong>Fuente:</strong> alertas activas de AlertaSegura. La información geográfica depende de las coordenadas registradas en cada alerta.</p>
+  <p class="map-note"><strong>Fuente:</strong> alertas activas de AlertaSegura. La información geográfica depende de las
+    coordenadas registradas en cada alerta.</p>
 </main>

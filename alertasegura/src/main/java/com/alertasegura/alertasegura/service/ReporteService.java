@@ -6,9 +6,12 @@ import com.alertasegura.alertasegura.entity.*;
 import com.alertasegura.alertasegura.exception.ResourceNotFoundException;
 import com.alertasegura.alertasegura.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,6 +36,9 @@ public class ReporteService {
     
     @Autowired
     private UbicacionRepository ubicacionRepository;
+
+    @Autowired
+    private EvidenciaStorageService evidenciaStorageService;
 
     @Transactional
     public ReporteResponse crearReporte(CrearReporteRequest request, String correoUsuario) {
@@ -71,7 +77,7 @@ public class ReporteService {
                 .ubicacion(ubicacion)
                 .titulo(request.getTitulo())
                 .descripcion(request.getDescripcion())
-                .fechaIncidente(request.getFechaIncidente())
+                .fechaIncidente(request.getFechaIncidente() != null ? request.getFechaIncidente() : LocalDateTime.now())
                 .evidenciaUrl(request.getEvidenciaUrl())
                 .build();
 
@@ -79,22 +85,43 @@ public class ReporteService {
         return mapToResponse(reporte);
     }
 
+    @Transactional(readOnly = true)
     public List<ReporteResponse> obtenerTodos() {
         return reporteRepository.findAllByOrderByFechaReporteDesc()
                 .stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public ReporteResponse obtenerPorId(Long id) {
         Reporte reporte = reporteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado"));
         return mapToResponse(reporte);
     }
     
+    @Transactional(readOnly = true)
     public List<ReporteResponse> obtenerPorUsuario(String correoUsuario) {
         Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         return reporteRepository.findByUsuarioIdUsuarioOrderByFechaReporteDesc(usuario.getIdUsuario())
                 .stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ReporteResponse adjuntarEvidencia(Long idReporte, String correoUsuario, MultipartFile archivo) {
+        Reporte reporte = reporteRepository.findById(idReporte)
+                .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado"));
+
+        if (!reporte.getUsuario().getCorreo().equalsIgnoreCase(correoUsuario)) {
+            throw new AccessDeniedException("No tienes permisos para adjuntar evidencia a este reporte");
+        }
+
+        String evidenciaAnterior = reporte.getEvidenciaUrl();
+        String nuevaEvidencia = evidenciaStorageService.guardar(archivo);
+        reporte.setEvidenciaUrl(nuevaEvidencia);
+        reporte = reporteRepository.save(reporte);
+
+        evidenciaStorageService.eliminar(evidenciaAnterior);
+        return mapToResponse(reporte);
     }
 
     private ReporteResponse mapToResponse(Reporte reporte) {

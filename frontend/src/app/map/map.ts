@@ -1,6 +1,7 @@
-import { AfterViewInit, Component, OnInit, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
+import { environment } from '../../environments/environment';
 
 interface ApiResponse<T> {
   data: T;
@@ -25,7 +26,7 @@ interface EmergencyAlert {
   templateUrl: './map.html',
   styleUrl: './map.css',
 })
-export class Map implements OnInit, AfterViewInit {
+export class Map implements OnInit, AfterViewInit, OnDestroy {
   private readonly disasterTypes = [
     'INCENDIO',
     'SISMO',
@@ -39,13 +40,15 @@ export class Map implements OnInit, AfterViewInit {
     'OTROS',
   ];
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/alertas';
+  private readonly apiUrl = `${environment.apiUrl}/alertas`;
   private leafletMap?: L.Map;
   private markerLayer?: L.LayerGroup;
+  private userMarker?: L.CircleMarker;
 
   readonly alerts = signal<EmergencyAlert[]>([]);
   readonly loading = signal(true);
   readonly error = signal(false);
+  readonly locationError = signal(false);
   readonly selectedRisk = signal('TODOS');
   readonly selectedCategory = signal('TODOS');
 
@@ -74,6 +77,10 @@ export class Map implements OnInit, AfterViewInit {
     this.renderMarkers();
   }
 
+  ngOnDestroy(): void {
+    this.leafletMap?.remove();
+  }
+
   setRisk(risk: string): void {
     this.selectedRisk.set(risk);
     this.renderMarkers();
@@ -85,7 +92,10 @@ export class Map implements OnInit, AfterViewInit {
   }
 
   categories(): string[] {
-    return ['TODOS', ...this.disasterTypes];
+    const publicadas = Array.from(new Set(this.alerts().map((alert) => alert.categoria))).filter(
+      (categoria) => categoria && !this.disasterTypes.includes(categoria),
+    );
+    return ['TODOS', ...this.disasterTypes, ...publicadas];
   }
 
   categoryLabel(category: string): string {
@@ -108,9 +118,10 @@ export class Map implements OnInit, AfterViewInit {
     const risk = this.selectedRisk();
     const category = this.selectedCategory();
 
-    return this.alerts().filter((alert) => this.disasterTypes.includes(alert.categoria)).filter((alert) =>
-      (risk === 'TODOS' || this.normalizedRisk(alert.nivelRiesgo) === risk) &&
-      (category === 'TODOS' || alert.categoria === category),
+    return this.alerts().filter(
+      (alert) =>
+        (risk === 'TODOS' || this.normalizedRisk(alert.nivelRiesgo) === risk) &&
+        (category === 'TODOS' || alert.categoria === category),
     );
   }
 
@@ -140,19 +151,27 @@ export class Map implements OnInit, AfterViewInit {
 
   locateUser(): void {
     if (!navigator.geolocation || !this.leafletMap) {
+      this.locationError.set(true);
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(({ coords }) => {
-      this.leafletMap?.setView([coords.latitude, coords.longitude], 14);
-      L.circleMarker([coords.latitude, coords.longitude], {
-        radius: 8,
-        color: '#ffffff',
-        weight: 3,
-        fillColor: '#4329d6',
-        fillOpacity: 1,
-      }).addTo(this.leafletMap!).bindTooltip('Tu ubicación', { permanent: false });
-    });
+    this.locationError.set(false);
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        this.leafletMap?.setView([coords.latitude, coords.longitude], 14);
+        this.userMarker?.remove();
+        this.userMarker = L.circleMarker([coords.latitude, coords.longitude], {
+          radius: 8,
+          color: '#ffffff',
+          weight: 3,
+          fillColor: '#4329d6',
+          fillOpacity: 1,
+        })
+          .addTo(this.leafletMap!)
+          .bindTooltip('Tu ubicación', { permanent: false });
+      },
+      () => this.locationError.set(true),
+    );
   }
 
   private renderMarkers(): void {
@@ -164,7 +183,7 @@ export class Map implements OnInit, AfterViewInit {
     this.filteredAlerts()
       .filter((alert) => alert.latitud !== null && alert.longitud !== null)
       .forEach((alert) => {
-        const color = alert.colorRiesgo || '#4329d6';
+        const color = /^#[0-9A-Fa-f]{6}$/.test(alert.colorRiesgo || '') ? alert.colorRiesgo : '#4329d6';
         const marker = L.marker([alert.latitud!, alert.longitud!], {
           icon: L.divIcon({
             className: 'alert-marker-wrapper',
@@ -174,7 +193,15 @@ export class Map implements OnInit, AfterViewInit {
           }),
         });
 
-        marker.bindPopup(`<strong>${alert.titulo}</strong><br>${alert.distrito || 'Ubicación no disponible'}<br><small>${this.riskLabel(alert.nivelRiesgo)}</small>`);
+        const popup = document.createElement('div');
+        const title = document.createElement('strong');
+        title.textContent = alert.titulo;
+        const location = document.createElement('div');
+        location.textContent = alert.distrito || 'Ubicación no disponible';
+        const risk = document.createElement('small');
+        risk.textContent = this.riskLabel(alert.nivelRiesgo);
+        popup.append(title, location, risk);
+        marker.bindPopup(popup);
         marker.addTo(this.markerLayer!);
       });
   }

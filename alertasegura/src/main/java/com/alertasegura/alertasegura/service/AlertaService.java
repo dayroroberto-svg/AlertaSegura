@@ -17,13 +17,18 @@ public class AlertaService {
     private AlertaRepository alertaRepository;
 
     public List<AlertaResponse> obtenerTodasActivas() {
-        return alertaRepository.findByEstadoAlertaNombreNotOrderByFechaPublicacionDesc("FINALIZADA")
+        return alertaRepository.findByEstadoAlertaNombreInOrderByFechaPublicacionDesc(
+                        List.of("ACTIVA", "EN_SEGUIMIENTO", "CONTROLADA"))
                 .stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     public AlertaResponse obtenerPorId(Long id) {
         Alerta alerta = alertaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Alerta no encontrada"));
+        if (!List.of("ACTIVA", "EN_SEGUIMIENTO", "CONTROLADA")
+                .contains(alerta.getEstadoAlerta().getNombre())) {
+            throw new ResourceNotFoundException("Alerta no encontrada");
+        }
         return mapToResponse(alerta);
     }
 

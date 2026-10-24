@@ -6,9 +6,12 @@ import com.alertasegura.alertasegura.dto.ReporteResponse;
 import com.alertasegura.alertasegura.service.ReporteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -29,7 +32,18 @@ public class ReporteController {
         return ResponseEntity.ok(ApiResponse.success("Reporte creado exitosamente", response));
     }
 
+    @PostMapping(value = "/{id}/evidencia", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ReporteResponse>> adjuntarEvidencia(
+            @PathVariable Long id,
+            @RequestPart("archivo") MultipartFile archivo,
+            Authentication authentication) {
+
+        ReporteResponse response = reporteService.adjuntarEvidencia(id, authentication.getName(), archivo);
+        return ResponseEntity.ok(ApiResponse.success("Evidencia adjuntada", response));
+    }
+
     @GetMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<ApiResponse<List<ReporteResponse>>> obtenerTodos() {
         return ResponseEntity.ok(ApiResponse.success(reporteService.obtenerTodos()));
     }
@@ -41,6 +55,7 @@ public class ReporteController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<ApiResponse<ReporteResponse>> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(reporteService.obtenerPorId(id)));
     }

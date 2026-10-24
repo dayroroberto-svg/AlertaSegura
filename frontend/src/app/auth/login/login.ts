@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
@@ -19,9 +19,10 @@ export class Login {
     contrasena: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  loading = false;
-  errorMessage = '';
-  infoMessage = '';
+  readonly loading = signal(false);
+  readonly errorMessage = signal('');
+  readonly infoMessage = signal('');
+  readonly userNotFound = signal(false);
   rememberSession = true;
 
   submit(): void {
@@ -30,17 +31,24 @@ export class Login {
       return;
     }
 
-    this.loading = true;
-    this.errorMessage = '';
-    this.infoMessage = '';
+    this.loading.set(true);
+    this.errorMessage.set('');
+    this.infoMessage.set('');
+    this.userNotFound.set(false);
 
     this.auth.login(this.loginForm.getRawValue(), this.rememberSession).subscribe({
       next: () => {
+        this.loading.set(false);
         void this.router.navigateByUrl('/dashboard');
       },
-      error: (error: { error?: { message?: string } }) => {
-        this.errorMessage = error.error?.message ?? 'No se pudo iniciar sesión. Verifica tus datos.';
-        this.loading = false;
+      error: (error: { error?: { message?: string }; status?: number }) => {
+        this.userNotFound.set(error.status === 404);
+        this.errorMessage.set(
+          error.status === 404
+            ? 'El correo no está registrado. Regístrate para crear tu cuenta.'
+            : error.error?.message ?? 'No se pudo iniciar sesión. Verifica tus datos.',
+        );
+        this.loading.set(false);
       },
     });
   }

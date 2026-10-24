@@ -36,16 +36,21 @@
 
       <label class="remember-option"><input type="checkbox" [checked]="rememberSession" (change)="rememberSession = !rememberSession" /> <span>Recordar esta sesión</span></label>
 
-      @if (errorMessage) {
-        <div class="form-error" role="alert">{{ errorMessage }}</div>
+      @if (errorMessage()) {
+        <div class="form-error" role="alert">
+          {{ errorMessage() }}
+          @if (userNotFound()) {
+            <button type="button" class="link-button" (click)="goToRegister()">Regístrate aquí</button>
+          }
+        </div>
       }
-      @if (infoMessage) {
-        <div class="form-info" role="status">{{ infoMessage }}</div>
+      @if (infoMessage()) {
+        <div class="form-info" role="status">{{ infoMessage() }}</div>
       }
 
-      <button type="submit" [disabled]="loading">
-        {{ loading ? 'Validando acceso...' : 'Entrar a mi cuenta' }}
-        @if (!loading) { <span aria-hidden="true">→</span> }
+      <button type="submit" [disabled]="loading()">
+        {{ loading() ? 'Validando acceso...' : 'Entrar a mi cuenta' }}
+        @if (!loading()) { <span aria-hidden="true">→</span> }
       </button>
     </form>
 

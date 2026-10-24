@@ -1,7 +1,8 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: #ffffff;
+  background-color: #f8fafc;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .register-page {
@@ -9,188 +10,235 @@
   display: grid;
   place-items: center;
   box-sizing: border-box;
-  padding: 3rem 1.25rem;
-  background: #ffffff;
+  padding: 2.5rem 1rem;
+  background-color: #f8fafc;
 }
 
-.form-panel {
-  width: min(100%, 30rem);
+/* Tarjeta contenedora blanca */
+.form-card {
+  width: min(100%, 28rem);
+  background: #ffffff;
+  border-radius: 1.25rem;
+  padding: 2.5rem 2.25rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  border: 1px solid #e2e8f0;
+}
+
+/* Cabecera / Marca */
+.brand-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  background-color: #2563eb;
+  color: #ffffff;
+  border-radius: 0.6rem;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 .form-heading {
-  margin-bottom: 2rem;
   text-align: center;
-}
-
-.eyebrow {
-  margin: 0 0 .8rem;
-  color: var(--indigo-ink-500);
-  font-size: .7rem;
-  font-weight: 800;
-  letter-spacing: .18em;
-}
-
-h1, p {
-  margin-top: 0;
+  margin-bottom: 1.75rem;
 }
 
 h1 {
-  margin-bottom: .65rem;
-  color: var(--indigo-ink-800);
-  font-size: clamp(2.2rem, 6vw, 3.25rem);
-  letter-spacing: -.06em;
+  margin: 0 0 0.5rem;
+  color: #0f172a;
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
-.form-heading > p:last-child {
-  margin-bottom: 0;
-  color: #71817f;
+.form-heading > p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
+/* Estructura del Formulario */
 form {
   display: flex;
   flex-direction: column;
-  gap: .55rem;
+  gap: 1.1rem;
 }
 
-.field-heading {
+.form-group {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: .65rem;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
-label {
-  color: #263c3b;
-  font-size: .82rem;
-  font-weight: 750;
+.field-heading label {
+  color: #334155;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
-.field-heading span {
-  color: #82918f;
-  font-size: .68rem;
-}
-
-input {
+/* Estilo de los Inputs */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"] {
   width: 100%;
   box-sizing: border-box;
-  padding: .95rem 1rem;
-  border: 1px solid #d6e0dc;
-  border-radius: .7rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.6rem;
   outline: none;
-  background: #ffffff;
-  color: #142827;
-  font: inherit;
-  transition: border-color .2s, box-shadow .2s;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-size: 0.92rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input::placeholder {
+  color: #94a3b8;
 }
 
 input:focus {
-  border-color: var(--indigo-ink-500);
-  box-shadow: 0 0 0 4px rgba(67, 41, 214, .12);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-.field-error,
+/* Estilos de Checkbox para Términos */
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 0.2rem;
+}
+
+.checkbox-input {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.15rem;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.checkbox-label a {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.checkbox-label a:hover {
+  text-decoration: underline;
+}
+
+/* Errores */
+.field-error {
+  color: #dc2626;
+  font-size: 0.75rem;
+  margin-top: 0.1rem;
+}
+
 .form-error {
-  color: #bd3f48;
-  font-size: .72rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.5rem;
+  background-color: #fef2f2;
+  color: #991b1b;
+  font-size: 0.8rem;
+  border: 1px solid #fecaca;
 }
 
-.form-error {
-  padding: .8rem 1rem;
-  border-radius: .6rem;
-  background: #fff0f0;
-}
-
-button {
+/* Botones principales */
+.btn-primary {
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-top: 1.2rem;
-  padding: 1rem 1.2rem;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.85rem 1.25rem;
   border: 0;
-  border-radius: .7rem;
-  background: var(--indigo-ink-500);
+  border-radius: 0.6rem;
+  background-color: #2563eb;
   color: #ffffff;
-  font: inherit;
-  font-weight: 750;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: transform 140ms cubic-bezier(.23, 1, .32, 1), background-color 160ms ease;
+  transition: background-color 0.15s ease, transform 0.1s ease;
 }
 
-button:hover:not(:disabled):not(.link-button) {
-  transform: translateY(-2px);
-  background: var(--indigo-ink-600);
+.btn-primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
 }
 
-button:not(:disabled):active {
-  transform: scale(.97);
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.99);
 }
 
-button:disabled {
-  cursor: wait;
-  opacity: .6;
+.btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
-.link-button {
-  display: inline;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--alert-red);
-  font-size: .82rem;
-}
-
-.link-button:hover {
-  transform: none;
-  background: transparent;
-  color: var(--indigo-ink-600);
-}
-
+/* Pie de tarjeta */
 .form-footer {
   margin: 1.5rem 0 0;
-  color: #71817f;
-  font-size: .82rem;
+  color: #64748b;
+  font-size: 0.88rem;
   text-align: center;
 }
 
+.link-button {
+  border: 0;
+  background: transparent;
+  color: #2563eb;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
+/* Estado de Éxito */
 .success-card {
-  padding: 1.2rem;
-  border: 1px solid #b9e2d1;
-  border-radius: .8rem;
-  background: #effaf4;
-  color: #205d43;
+  padding: 1.25rem;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.75rem;
+  background-color: #f0fdf4;
+  color: #166534;
+  text-align: center;
 }
 
 .success-card p {
-  margin: .45rem 0 0;
-  color: #4d7664;
-  font-size: .85rem;
+  margin: 0.5rem 0 0;
+  color: #15803d;
+  font-size: 0.88rem;
 }
 
-.success-card button {
-  width: 100%;
-  margin-top: 1.2rem;
-}
-
-button:focus-visible,
-input:focus-visible {
-  outline: 3px solid rgba(213, 107, 91, .35);
-  outline-offset: 3px;
-}
-
-@media (max-width: 520px) {
-  .register-page {
-    align-items: start;
-    padding: 2.5rem 1.25rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  button {
-    transition: background-color 160ms ease;
-  }
-
-  button:not(:disabled):active {
-    transform: none;
+@media (max-width: 480px) {
+  .form-card {
+    padding: 1.75rem 1.25rem;
+    box-shadow: none;
+    border: none;
+    background: transparent;
   }
 }

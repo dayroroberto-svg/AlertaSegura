@@ -64,6 +64,7 @@ public class VerificacionService {
         return mapToResponse(verificacion);
     }
 
+    @Transactional(readOnly = true)
     public List<VerificacionResponse> obtenerPorReporte(Long idReporte) {
         return verificacionRepository.findByReporteIdReporte(idReporte)
                 .stream().map(this::mapToResponse).collect(Collectors.toList());

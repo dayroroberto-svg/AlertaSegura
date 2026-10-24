@@ -9,6 +9,7 @@ import com.alertasegura.alertasegura.repository.PreferenciaNotificacionRepositor
 import com.alertasegura.alertasegura.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -21,6 +22,7 @@ public class PreferenciaNotificacionService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Transactional
     public PreferenciaNotificacionResponse obtenerMisPreferencias(String correoUsuario) {
         Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
@@ -31,6 +33,7 @@ public class PreferenciaNotificacionService {
         return mapToResponse(preferencia);
     }
 
+    @Transactional
     public PreferenciaNotificacionResponse actualizarMisPreferencias(PreferenciaNotificacionRequest request, String correoUsuario) {
         Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));

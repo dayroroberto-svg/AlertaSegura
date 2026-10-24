@@ -38,7 +38,7 @@ Este documento detalla el plan de implementación del Frontend para el sistema A
 ### Fase 15: Módulos de Operación (Pendiente)
 - [ ] Módulo de Reportes: Vista para listar y crear reportes (integración con mapas opcional).
 - [ ] Módulo de Alertas Públicas.
-- [ ] Directorio de Contactos de Emergencia e Información de Prevención.
+- [x] Directorio de Contactos de Emergencia e Información de Prevención.
 
 ### Vista pública de Inicio (Completado)
 - [x] Presentación principal con estado del sistema y alertas activas.

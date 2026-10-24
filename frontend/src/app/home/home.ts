@@ -27,10 +27,10 @@ interface RecentAlert {
 })
 export class Home {
   readonly emergencyTypes: EmergencyType[] = [
-    { name: 'Sismos', description: 'Movimientos sísmicos registrados', icon: '⌁', tone: 'mint', count: '03' },
-    { name: 'Incendios', description: 'Incidentes con fuego activos', icon: '✦', tone: 'coral', count: '05' },
-    { name: 'Inundaciones', description: 'Zonas afectadas por agua', icon: '≈', tone: 'blue', count: '02' },
-    { name: 'Deslizamientos', description: 'Alertas de movimiento de tierra', icon: '△', tone: 'amber', count: '01' },
+    { name: 'Sismos', description: 'Movimientos sísmicos registrados', icon: '🌎', tone: 'mint', count: '03' },
+    { name: 'Incendios', description: 'Incidentes con fuego activos', icon: '🔥', tone: 'coral', count: '04' },
+    { name: 'Inundaciones', description: 'Zonas afectadas por agua', icon: '🌊', tone: 'blue', count: '02' },
+    { name: 'Deslizamientos', description: 'Alertas de movimiento de tierra', icon: '🏔️', tone: 'amber', count: '01' },
   ];
 
   readonly recentAlerts: RecentAlert[] = [

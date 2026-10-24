@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-site-footer',
@@ -7,4 +8,6 @@ import { RouterLink } from '@angular/router';
   templateUrl: './site-footer.html',
   styleUrl: './site-footer.css',
 })
-export class SiteFooter {}
+export class SiteFooter {
+  readonly auth = inject(AuthService);
+}

@@ -14,6 +14,7 @@ public class CrearReporteRequest {
     @Size(max = 200, message = "El título no puede exceder 200 caracteres")
     private String titulo;
 
+    @Size(max = 5000, message = "La descripción no puede exceder 5000 caracteres")
     private String descripcion;
 
     @NotNull(message = "La categoría es obligatoria")
@@ -26,6 +27,7 @@ public class CrearReporteRequest {
     @Valid
     private UbicacionRequest ubicacion;
 
+    @PastOrPresent(message = "La fecha del incidente no puede ser futura")
     private LocalDateTime fechaIncidente;
 
     @Size(max = 500)
