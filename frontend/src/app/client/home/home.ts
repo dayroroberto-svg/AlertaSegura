@@ -1,9 +1,10 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { AlertaCard } from '../alertas/alerta-card/alerta-card';
 import { AlertasService } from '../alertas/alertas.service';
 import { Alerta } from '../alertas/alerta.model';
+import { DatosService, EstadisticasPublicas } from '../../core/data/datos.service';
 
 interface TipoEmergencia {
   nombre: string;
@@ -21,6 +22,13 @@ export class Home {
   private readonly alertasService = inject(AlertasService);
 
   private readonly alertas = toSignal(this.alertasService.listar(), { initialValue: [] as Alerta[] });
+  private readonly estadisticas = signal<EstadisticasPublicas | null>(null);
+
+  constructor() {
+    inject(DatosService)
+      .estadisticas()
+      .then((datos) => this.estadisticas.set(datos), () => undefined);
+  }
 
   readonly recientes = computed(() => this.alertas().slice(0, 3));
   readonly activas = computed(() => this.alertas().filter((alerta) => alerta.estado === 'ACTIVA').length);
@@ -32,13 +40,17 @@ export class Home {
     { nombre: 'Deslizamientos', categoria: 'Deslizamiento', icono: '⛰️' },
   ];
 
-  // Cifras de presentación del prototipo; no vienen de la base de datos.
-  readonly cifras = [
-    { icono: '🔴', valor: '47', etiqueta: 'Alertas activas', tono: 'rojo' },
-    { icono: '📋', valor: '1,284', etiqueta: 'Reportes recibidos', tono: 'azul' },
-    { icono: '✅', valor: '362', etiqueta: 'Emergencias verificadas', tono: 'verde' },
-    { icono: '📍', valor: '18', etiqueta: 'Regiones monitoreadas', tono: 'ambar' },
-  ];
+  // Totales reales de la base de datos; muestra "—" mientras cargan
+  readonly cifras = computed(() => {
+    const datos = this.estadisticas();
+    const valor = (n: number | undefined) => (datos && n !== undefined ? n.toLocaleString('es-PE') : '—');
+    return [
+      { icono: '🔴', valor: valor(datos?.alertas_activas), etiqueta: 'Alertas activas', tono: 'rojo' },
+      { icono: '📋', valor: valor(datos?.reportes_recibidos), etiqueta: 'Reportes recibidos', tono: 'azul' },
+      { icono: '✅', valor: valor(datos?.reportes_verificados), etiqueta: 'Emergencias verificadas', tono: 'verde' },
+      { icono: '📍', valor: valor(datos?.distritos), etiqueta: 'Distritos con alertas', tono: 'ambar' },
+    ];
+  });
 
   readonly pasos = [
     { numero: '01', icono: '📡', titulo: 'Reporta', texto: 'Ciudadanos reportan incidentes con ubicación, descripción e imágenes en tiempo real desde cualquier dispositivo.' },

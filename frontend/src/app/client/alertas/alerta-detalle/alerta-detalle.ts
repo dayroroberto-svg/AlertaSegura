@@ -21,7 +21,7 @@ export class AlertaDetalle {
   readonly contactos = [
     { nombre: 'Bomberos', telefono: '116' },
     { nombre: 'INDECI', telefono: '115' },
-    { nombre: 'Ambulancia', telefono: '117' },
+    { nombre: 'Ambulancia (SAMU)', telefono: '106' },
   ];
 
   private readonly resultado = toSignal(

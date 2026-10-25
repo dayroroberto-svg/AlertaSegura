@@ -11,6 +11,10 @@ Los scripts SQL están en `supabase/`. Si hay que crear la base desde cero, se e
 5. `storage_evidencias.sql`
 6. `alerta_manual.sql`
 7. `perfil_distrito_y_preferencias.sql`
+8. `analisis_ia_evidencia.sql`
+9. `estadisticas_publicas.sql`
+
+La Edge Function `analizar-evidencia` está en `supabase/functions/` y necesita el secreto `GEMINI_API_KEY`.
 
 ## Fase 1: esquema y datos iniciales (completada)
 
@@ -52,6 +56,13 @@ Un trigger guarda el historial de estados de cada alerta. Al verificar un report
 - Bucket privado `evidencias`: imágenes JPEG, PNG o WebP de hasta 5 MB.
 - Cada archivo va en una carpeta con el `uid` del usuario. El dueño y los administradores pueden verlo.
 - `reportes.evidencia_url` guarda la ruta del archivo en el bucket.
+
+## Fase 5b: revisión de fotos con IA (completada)
+
+- La Edge Function `analizar-evidencia` descarga la foto del reporte y le pregunta a Gemini (modelo `gemini-3.5-flash-lite`, en el nivel gratuito) si corresponde al tipo de emergencia declarado. La interacción se envía con `store: false` para que Google no la guarde. En el nivel gratuito, Google puede usar el contenido para mejorar sus productos; si la app se usa con fotos reales, conviene pasar a un nivel de pago.
+- La respuesta llega como JSON con veredicto (`COINCIDE`, `DUDOSA` o `NO_COINCIDE`), confianza y motivo, y se guarda en las columnas `ia_*` de `reportes`.
+- La función lee el reporte con la sesión de quien la llama, así que RLS solo deja pasar al dueño del reporte o a un administrador. La foto y el resultado se manejan con la clave de servicio, que solo existe en el servidor.
+- Es un aviso para el administrador: nunca rechaza ni oculta un reporte.
 
 ## Fase 6: conexión con el frontend (completada)
 

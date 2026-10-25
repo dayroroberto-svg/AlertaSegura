@@ -144,6 +144,32 @@ textarea:focus-visible {
   font-weight: 500;
 }
 
+.mapa-selector {
+  height: 280px;
+  margin-top: .75rem;
+  border: 1px solid var(--slate-300);
+  border-radius: .75rem;
+  overflow: hidden;
+}
+
+.mapa-selector + .detectada {
+  margin-top: .625rem;
+}
+
+.ayuda-mapa {
+  margin: .5rem 0 0;
+  color: var(--slate-600);
+  font-size: .8125rem;
+}
+
+:host ::ng-deep .punto-reporte {
+  background: none;
+  border: 0;
+  font-size: 1.75rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .35));
+}
+
 .zona-subida {
   display: block;
   border: 2px dashed var(--slate-300);

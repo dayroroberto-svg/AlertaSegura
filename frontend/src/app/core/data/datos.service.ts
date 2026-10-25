@@ -17,6 +17,13 @@ const ESTADOS_VIGENTES = ['ACTIVA', 'EN_SEGUIMIENTO', 'CONTROLADA'];
 const SELECT_ALERTA =
   '*, categorias_emergencia(nombre), niveles_riesgo(nombre, color), estados_alerta!inner(nombre), ubicaciones(distrito, direccion, latitud, longitud)';
 
+export interface EstadisticasPublicas {
+  alertas_activas: number;
+  reportes_recibidos: number;
+  reportes_verificados: number;
+  distritos: number;
+}
+
 export interface NuevoReporte {
   idCategoria: number;
   idNivel: number;
@@ -25,6 +32,7 @@ export interface NuevoReporte {
   fechaIncidente?: string;
   evidencia?: string | null;
   direccion?: string;
+  distrito?: string;
   latitud?: number | null;
   longitud?: number | null;
 }
@@ -33,6 +41,13 @@ export interface NuevoReporte {
 @Injectable({ providedIn: 'root' })
 export class DatosService {
   private readonly auth = inject(AuthService);
+
+  /** Totales para Inicio y Login; los puede ver cualquiera porque no expone filas. */
+  async estadisticas(): Promise<EstadisticasPublicas> {
+    const { data, error } = await supabase.rpc('estadisticas_publicas');
+    if (error) throw error;
+    return data as EstadisticasPublicas;
+  }
 
   async contactos(): Promise<ContactoConTipo[]> {
     const { data, error } = await supabase
@@ -135,6 +150,12 @@ export class DatosService {
     return ruta;
   }
 
+  /** Pide a la Edge Function que revise la foto del reporte con IA. El resultado queda guardado en el reporte. */
+  async analizarEvidencia(idReporte: number): Promise<void> {
+    const { error } = await supabase.functions.invoke('analizar-evidencia', { body: { id_reporte: idReporte } });
+    if (error) throw error;
+  }
+
   async crearReporte(reporte: NuevoReporte): Promise<Reporte> {
     const { data, error } = await supabase
       .rpc('crear_reporte', {
@@ -145,6 +166,7 @@ export class DatosService {
         p_fecha_incidente: reporte.fechaIncidente || null,
         p_evidencia_url: reporte.evidencia ?? null,
         p_direccion: reporte.direccion || null,
+        p_distrito: reporte.distrito || null,
         p_latitud: reporte.latitud ?? null,
         p_longitud: reporte.longitud ?? null,
       })

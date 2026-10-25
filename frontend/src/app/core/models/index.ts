@@ -63,6 +63,11 @@ export interface Reporte {
   /** Ruta del archivo en el bucket privado `evidencias` (<auth_uid>/<archivo>). */
   evidencia_url: string | null;
   observaciones_admin: string | null;
+  /** Revisión automática de la foto; solo es un aviso para el administrador. */
+  ia_veredicto: 'COINCIDE' | 'DUDOSA' | 'NO_COINCIDE' | 'ERROR' | null;
+  ia_confianza: number | null;
+  ia_motivo: string | null;
+  ia_analizado_en: string | null;
 }
 
 export interface Alerta {

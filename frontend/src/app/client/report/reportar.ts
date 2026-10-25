@@ -1,6 +1,7 @@
-import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import * as L from 'leaflet';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../core/auth/auth.service';
 import { DatosService, NuevoReporte } from '../../core/data/datos.service';
@@ -23,7 +24,7 @@ interface ReporteForm {
   standalone: true,
   imports: [FormsModule, RouterLink],
 })
-export class Reportar {
+export class Reportar implements OnDestroy {
   readonly auth = inject(AuthService);
   loading = false;
   error = false;
@@ -36,6 +37,22 @@ export class Reportar {
   errorMessage = '';
 
   @ViewChild('imagenInput') private imagenInput?: ElementRef<HTMLInputElement>;
+
+  // El formulario se destruye y se vuelve a crear según el estado, así que el mapa sigue ese ciclo
+  @ViewChild('mapaSelector') set contenedorMapa(contenedor: ElementRef<HTMLDivElement> | undefined) {
+    if (contenedor) {
+      this.iniciarMapa(contenedor.nativeElement);
+    } else {
+      this.destruirMapa();
+    }
+  }
+
+  private mapa?: L.Map;
+  private marcador?: L.Marker;
+  direccionDetectada = '';
+  distritoDetectado = '';
+  private consultaDireccion = 0;
+  private readonly cdr = inject(ChangeDetectorRef);
 
   private readonly datos = inject(DatosService);
   private readonly router = inject(Router);
@@ -96,12 +113,16 @@ export class Reportar {
     const direccion = this.form.direccion.trim();
 
     void this.enviarReporte(imagen, {
-      titulo: direccion ? `${tipo.etiqueta} en ${direccion}` : tipo.etiqueta,
+      titulo: direccion || this.direccionDetectada ? `${tipo.etiqueta} en ${direccion || this.direccionDetectada}` : tipo.etiqueta,
       descripcion: this.form.descripcion.trim(),
       idCategoria: tipo.idCategoria,
       idNivel: nivel.idNivel,
       fechaIncidente: this.form.fechaIncidente || undefined,
-      direccion,
+      direccion:
+        direccion ||
+        this.direccionDetectada ||
+        `Punto marcado en el mapa (${Number(this.form.latitud).toFixed(5)}, ${Number(this.form.longitud).toFixed(5)})`,
+      distrito: this.distritoDetectado || undefined,
       latitud: this.form.latitud,
       longitud: this.form.longitud,
     });
@@ -120,11 +141,16 @@ export class Reportar {
 
     try {
       const creado = await this.conTiempoLimite(this.datos.crearReporte({ ...reporte, evidencia }), 15000);
+      if (evidencia) {
+        // La revisión con IA corre de fondo; si falla, el admin puede pedirla desde el detalle
+        void this.datos.analizarEvidencia(creado.id_reporte).catch(() => undefined);
+      }
       this.finishSuccess(creado.id_reporte);
     } catch (err) {
       this.loading = false;
       this.error = true;
       this.errorMessage = this.resolveErrorMessage(err as { message?: string; code?: string });
+      this.cdr.markForCheck();
     }
   }
 
@@ -166,15 +192,17 @@ export class Reportar {
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        this.form.latitud = pos.coords.latitude;
-        this.form.longitud = pos.coords.longitude;
-        this.form.direccion ||= 'Ubicación detectada';
+        this.colocarMarcador(pos.coords.latitude, pos.coords.longitude, true);
         this.locationDetected = true;
-        this.locationError = false;
+        this.cdr.markForCheck();
       },
       () => {
         this.locationError = true;
-        setTimeout(() => (this.locationError = false), 3000);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.locationError = false;
+          this.cdr.markForCheck();
+        }, 3000);
       },
     );
   }
@@ -235,7 +263,85 @@ export class Reportar {
     });
   }
 
+  ngOnDestroy(): void {
+    this.destruirMapa();
+  }
+
+  private iniciarMapa(contenedor: HTMLDivElement): void {
+    this.destruirMapa();
+    this.mapa = L.map(contenedor).setView([-12.0464, -77.0428], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19,
+    }).addTo(this.mapa);
+    this.mapa.on('click', (evento: L.LeafletMouseEvent) => this.colocarMarcador(evento.latlng.lat, evento.latlng.lng));
+    if (this.form.latitud !== null && this.form.longitud !== null) {
+      this.colocarMarcador(this.form.latitud, this.form.longitud, true);
+    }
+  }
+
+  private destruirMapa(): void {
+    this.mapa?.remove();
+    this.mapa = undefined;
+    this.marcador = undefined;
+  }
+
+  private colocarMarcador(latitud: number, longitud: number, centrar = false): void {
+    this.form.latitud = latitud;
+    this.form.longitud = longitud;
+    this.locationError = false;
+    if (this.mapa) {
+      if (this.marcador) {
+        this.marcador.setLatLng([latitud, longitud]);
+      } else {
+        this.marcador = L.marker([latitud, longitud], {
+          draggable: true,
+          icon: L.divIcon({ className: 'punto-reporte', html: '📍', iconSize: [32, 32], iconAnchor: [16, 30] }),
+        }).addTo(this.mapa);
+        this.marcador.on('dragend', () => {
+          const punto = this.marcador!.getLatLng();
+          this.form.latitud = punto.lat;
+          this.form.longitud = punto.lng;
+          void this.buscarDireccion(punto.lat, punto.lng);
+          this.cdr.markForCheck();
+        });
+      }
+      if (centrar) {
+        this.mapa.setView([latitud, longitud], Math.max(this.mapa.getZoom(), 16));
+      }
+    }
+    void this.buscarDireccion(latitud, longitud);
+    this.cdr.markForCheck();
+  }
+
+  // OpenStreetMap convierte el punto en calle y distrito; si no responde, se guardan las coordenadas
+  private async buscarDireccion(latitud: number, longitud: number): Promise<void> {
+    const consulta = ++this.consultaDireccion;
+    this.direccionDetectada = '';
+    this.distritoDetectado = '';
+    try {
+      const respuesta = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitud}&lon=${longitud}&accept-language=es&zoom=18`,
+      );
+      if (!respuesta.ok) return;
+      const { address } = (await respuesta.json()) as { address?: Record<string, string> };
+      // Si el usuario movió el punto mientras tanto, esta respuesta ya no sirve
+      if (consulta !== this.consultaDireccion || !address) return;
+      const calle = [address['road'], address['house_number']].filter(Boolean).join(' ');
+      this.direccionDetectada = [address['amenity'], calle].filter(Boolean).join(', ');
+      this.distritoDetectado = address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '';
+    } catch {
+      // Sin conexión con OpenStreetMap: el reporte usa las coordenadas
+    } finally {
+      this.cdr.markForCheck();
+    }
+  }
+
   private resetForm(): void {
+    this.marcador?.remove();
+    this.marcador = undefined;
+    this.direccionDetectada = '';
+    this.distritoDetectado = '';
     this.form = this.formularioVacio();
     this.hasImage = false;
     this.locationDetected = false;

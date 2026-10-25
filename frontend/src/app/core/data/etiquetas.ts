@@ -37,6 +37,8 @@ export function iconoCategoria(nombre: string): string {
 /** Texto de ubicación a partir de los campos opcionales de `ubicaciones`. */
 export function textoUbicacion(u: { distrito?: string | null; provincia?: string | null; direccion?: string | null } | null | undefined): string {
   if (!u) return 'Ubicación no disponible';
-  const zona = [u.distrito, u.provincia].filter(Boolean).join(', ');
-  return u.direccion?.trim() || zona || 'Ubicación no disponible';
+  const direccion = u.direccion?.trim();
+  const distrito = u.distrito?.trim();
+  if (direccion && distrito && !direccion.includes(distrito)) return `${direccion}, ${distrito}`;
+  return direccion || [distrito, u.provincia].filter(Boolean).join(', ') || 'Ubicación no disponible';
 }

@@ -21,38 +21,18 @@
       </div>
 
       <div style="position: relative; height: 480px; overflow: hidden; background: #e8f0f8">
-        <img
-          src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=900&h=500&fit=crop&auto=format"
-          alt="Mapa de Lima, Perú"
-          style="width: 100%; height: 100%; object-fit: cover; opacity: 0.55"
-        />
-        <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(15, 45, 92, 0.1), rgba(15, 45, 92, 0.3))"></div>
+        <div #mapa role="application" aria-label="Mapa de alertas" style="width: 100%; height: 100%"></div>
 
-        @for (x of lineasVerticales; track x) {
-          <div [style.left.%]="x" style="position: absolute; top: 0; bottom: 0; border-left: 1px solid rgba(255, 255, 255, 0.08)"></div>
-        }
-        @for (y of lineasHorizontales; track y) {
-          <div [style.top.%]="y" style="position: absolute; left: 0; right: 0; border-top: 1px solid rgba(255, 255, 255, 0.08)"></div>
-        }
-
-        @for (pin of filtrados(); track pin.id) {
-          <div
-            class="map-marker"
-            [style.left]="pin.left"
-            [style.top]="pin.top"
-            [style.background]="color(pin.nivel)"
-            [style.transform]="seleccionado()?.id === pin.id ? 'scale(1.6)' : 'scale(1)'"
-            [title]="pin.tipo"
-            (click)="alternar(pin)"
-          ></div>
+        @if (filtrados().length === 0) {
+          <div style="position: absolute; left: 50%; top: 16px; transform: translateX(-50%); z-index: 1000; background: white; border-radius: 8px; padding: 8px 14px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); font-size: 13px; color: var(--text-muted)">
+            No hay alertas con ubicación en el mapa
+          </div>
         }
 
         @if (seleccionado(); as s) {
           <div
-            [style.left]="s.left"
-            [style.top]="'calc(' + s.top + ' + 18px)'"
             [style.border-color]="color(s.nivel)"
-            style="position: absolute; background: white; border-radius: 8px; padding: 10px 14px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); font-size: 13px; min-width: 200px; z-index: 10; border: 2px solid"
+            style="position: absolute; left: 16px; bottom: 28px; background: white; border-radius: 8px; padding: 10px 14px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); font-size: 13px; min-width: 200px; max-width: 320px; z-index: 1000; border: 2px solid"
           >
             <div style="font-weight: 700; margin-bottom: 4px; color: var(--text)">{{ s.tipo }} — {{ s.ubicacion }}</div>
             <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px">{{ s.desc }}</div>

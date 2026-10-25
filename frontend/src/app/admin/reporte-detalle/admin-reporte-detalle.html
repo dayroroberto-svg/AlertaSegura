@@ -30,6 +30,9 @@
               <p style="font-size: 14px; font-weight: 500; color: var(--text); margin: 0">{{ r.fecha }} — {{ r.hora }}</p>
             </div>
           </div>
+          @if (r.latitud !== null && r.longitud !== null) {
+            <div #mapa role="img" [attr.aria-label]="'Mapa con la ubicación del reporte: ' + r.ubicacion" style="margin-top: 16px; height: 220px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border)"></div>
+          }
           <div style="margin-top: 16px">
             <p class="meta-label">Nivel de gravedad</p>
             <app-admin-risk-badge [level]="r.gravedad" />
@@ -42,16 +45,48 @@
 
         <div class="stat-card">
           <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 14px">Evidencia adjunta</h3>
-          <div style="border-radius: 10px; overflow: hidden; position: relative; background: #e2e8f0; height: 200px">
-            <img
-              src="https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?w=800&h=400&fit=crop&auto=format"
-              alt="Evidencia del reporte de emergencia"
-              style="width: 100%; height: 100%; object-fit: cover"
-            />
-            <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0, 0, 0, 0.6); color: white; font-size: 11px; padding: 4px 10px; border-radius: 20px">
-              Imagen adjunta por ciudadano
+          @if (urlEvidencia(); as url) {
+            <a [href]="url" target="_blank" rel="noopener" style="display: block; border-radius: 10px; overflow: hidden; position: relative; background: #e2e8f0">
+              <img [src]="url" alt="Foto adjunta por el ciudadano" style="width: 100%; max-height: 360px; object-fit: contain; display: block" />
+              <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0, 0, 0, 0.6); color: white; font-size: 11px; padding: 4px 10px; border-radius: 20px">
+                Abrir en tamaño completo
+              </div>
+            </a>
+          } @else if (cargandoEvidencia()) {
+            <p style="font-size: 13px; color: var(--text-muted); margin: 0">Cargando la foto...</p>
+          } @else if (r.evidencia) {
+            <p style="font-size: 13px; color: var(--text-muted); margin: 0">No se pudo cargar la foto adjunta.</p>
+          } @else {
+            <p style="font-size: 13px; color: var(--text-muted); margin: 0">El ciudadano no adjuntó ninguna foto.</p>
+          }
+
+          @if (r.evidencia) {
+            <div style="margin-top: 14px">
+              <p class="meta-label" style="margin-bottom: 6px">Revisión con IA</p>
+              @if (r.ia; as ia) {
+                <div [style.background]="estiloIa[ia.veredicto].fondo" [style.border-color]="estiloIa[ia.veredicto].color" style="border: 1px solid; border-radius: 8px; padding: 10px 12px">
+                  <p [style.color]="estiloIa[ia.veredicto].color" style="font-size: 13px; font-weight: 700; margin: 0 0 4px">
+                    {{ estiloIa[ia.veredicto].etiqueta }}
+                    @if (ia.confianza !== null) {
+                      <span style="font-weight: 500">({{ (ia.confianza * 100).toFixed(0) }}% de confianza)</span>
+                    }
+                  </p>
+                  <p style="font-size: 13px; color: var(--text); margin: 0">{{ ia.motivo }}</p>
+                </div>
+                <p style="font-size: 11px; color: var(--text-muted); margin: 6px 0 0">Es solo una sugerencia; la decisión final es tuya.</p>
+              } @else {
+                <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 8px">Esta foto todavía no fue revisada por la IA.</p>
+              }
+              @if (!r.ia || r.ia.veredicto === 'ERROR') {
+                <button class="btn-secondary" type="button" style="font-size: 12px; margin-top: 8px" [disabled]="analizando()" (click)="analizarConIa()">
+                  {{ analizando() ? 'Revisando la foto...' : 'Revisar con IA' }}
+                </button>
+              }
+              @if (errorAnalisis()) {
+                <p style="font-size: 12px; color: #b91c1c; margin: 6px 0 0">No se pudo revisar la foto. Inténtalo de nuevo en un momento.</p>
+              }
             </div>
-          </div>
+          }
         </div>
       </div>
 

@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import * as L from 'leaflet';
 import { AdminDataService } from '../admin-data.service';
 import { NivelRiesgo, PinMapa } from '../admin.models';
 import { AdminIcon } from '../shared/admin-icon';
@@ -24,18 +25,66 @@ export class AdminMapa {
     { nivel: 'medio' as NivelRiesgo, etiqueta: 'Medio' },
     { nivel: 'bajo' as NivelRiesgo, etiqueta: 'Bajo' },
   ];
-  readonly lineasVerticales = Array.from({ length: 8 }, (_, i) => (i + 1) * 12.5);
-  readonly lineasHorizontales = Array.from({ length: 6 }, (_, i) => (i + 1) * 16.7);
 
   readonly filtroNivel = signal('');
   readonly seleccionado = signal<PinMapa | null>(null);
   readonly filtrados = computed(() => this.pines().filter((p) => !this.filtroNivel() || p.nivel === this.filtroNivel()));
+
+  private readonly contenedor = viewChild<ElementRef<HTMLDivElement>>('mapa');
+  private mapa?: L.Map;
+  private capa?: L.LayerGroup;
+
+  constructor() {
+    effect(() => {
+      const elemento = this.contenedor();
+      if (elemento && !this.mapa) {
+        this.iniciarMapa(elemento.nativeElement);
+      }
+      this.dibujar(this.filtrados(), this.seleccionado());
+    });
+    inject(DestroyRef).onDestroy(() => this.mapa?.remove());
+  }
 
   color(nivel: NivelRiesgo): string {
     return COLOR_NIVEL[nivel];
   }
 
   alternar(pin: PinMapa): void {
-    this.seleccionado.set(this.seleccionado()?.id === pin.id ? null : pin);
+    const nuevo = this.seleccionado()?.id === pin.id ? null : pin;
+    this.seleccionado.set(nuevo);
+    if (nuevo) {
+      this.mapa?.setView([nuevo.latitud, nuevo.longitud], Math.max(this.mapa.getZoom(), 14));
+    }
+  }
+
+  private iniciarMapa(contenedor: HTMLDivElement): void {
+    this.mapa = L.map(contenedor).setView([-12.0464, -77.0428], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19,
+    }).addTo(this.mapa);
+    this.capa = L.layerGroup().addTo(this.mapa);
+  }
+
+  private dibujar(pines: PinMapa[], seleccionado: PinMapa | null): void {
+    if (!this.mapa || !this.capa) {
+      return;
+    }
+    this.capa.clearLayers();
+    pines.forEach((pin) => {
+      const activo = seleccionado?.id === pin.id;
+      const tamano = activo ? 32 : 22;
+      const marcador = L.marker([pin.latitud, pin.longitud], {
+        title: pin.tipo,
+        icon: L.divIcon({
+          className: '',
+          html: `<span style="display:block;width:${tamano}px;height:${tamano}px;border-radius:50%;background:${this.color(pin.nivel)};border:3px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.4)"></span>`,
+          iconSize: [tamano, tamano],
+          iconAnchor: [tamano / 2, tamano / 2],
+        }),
+      });
+      marcador.on('click', () => this.alternar(pin));
+      marcador.addTo(this.capa!);
+    });
   }
 }

@@ -24,13 +24,13 @@
       <a [routerLink]="auth.session() ? '/dashboard' : '/login'">Mi cuenta</a>
     </nav>
 
-    <div class="footer-column" role="group" aria-label="Soporte">
+    <nav class="footer-column" aria-label="Enlaces de soporte">
       <h2>Soporte</h2>
-      <span>Centro de ayuda</span>
-      <span>Términos de uso</span>
-      <span>Privacidad</span>
-      <span>Accesibilidad</span>
-    </div>
+      <a routerLink="/ayuda">Centro de ayuda</a>
+      <a routerLink="/terminos">Términos de uso</a>
+      <a routerLink="/privacidad">Privacidad</a>
+      <a routerLink="/accesibilidad">Accesibilidad</a>
+    </nav>
   </div>
   <div class="footer-bottom">© 2026 AlertaSegura — Sistema Nacional de Información de Emergencias del Perú</div>
 </footer>

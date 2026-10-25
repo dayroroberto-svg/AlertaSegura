@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../core/auth/auth.service';
 import { DatosService } from '../../core/data/datos.service';
@@ -56,6 +56,7 @@ interface NotificationData {
 export class Dashboard implements OnInit {
   readonly auth = inject(AuthService);
   private readonly datos = inject(DatosService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   dashboardMetrics = [
     { label: 'Alertas cercanas', value: '0', detail: 'Alertas publicadas', icon: '🔔', tone: 'coral' },
@@ -126,6 +127,8 @@ export class Dashboard implements OnInit {
         { ...this.dashboardMetrics[2], value: String(reports.data?.filter((report) => report.estadoReporte === 'VERIFICADO').length ?? 0) },
         { ...this.dashboardMetrics[3], value: String(notifications.data?.filter((notification) => !notification.leida).length ?? 0) },
       ];
+      // La app no usa zone.js: hay que avisar que cambiaron los datos para que se repinte
+      this.cdr.markForCheck();
     });
   }
 

@@ -1,3 +1,11 @@
+/* Columna de al menos el alto de la ventana: en páginas cortas el footer queda pegado abajo */
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+app-site-footer {
+  margin-top: auto;
 }

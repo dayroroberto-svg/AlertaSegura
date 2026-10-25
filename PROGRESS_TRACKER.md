@@ -62,7 +62,7 @@ Estado actual: AlertaSegura es una plataforma de seguridad ciudadana con fronten
 - Dashboard del ciudadano con métricas, alertas, sus reportes y sus notificaciones.
 - Lista y detalle de alertas, con filtros por riesgo y tipo.
 - Mapa con Leaflet y OpenStreetMap: marcadores, filtros por riesgo y tipo, y ubicación del usuario.
-- Reportar: formulario con ubicación, nivel de riesgo y foto de evidencia, y pantalla de confirmación.
+- Reportar: formulario con ubicación marcada en un mapa (o detectada con el GPS), nivel de riesgo y foto de evidencia, y pantalla de confirmación.
 - Prevención (antes, durante y después por categoría) y contactos de emergencia con botón de llamada.
 - Panel de administración completo: dashboard, reportes, verificación o rechazo con comentario, creación de alertas, gestión de alertas, usuarios, mapa y configuración.
 - Header y footer compartidos en todas las páginas públicas.
@@ -121,7 +121,18 @@ Nada bloquea el uso del sistema. Queda por hacer:
 - Panel de administración en `/admin`, con layout propio, `adminGuard` y nueve pantallas. Todo su acceso a datos está en `admin-data.service.ts`.
 - Al iniciar sesión, el administrador entra a `/admin` y el ciudadano a `/inicio`.
 - Se añadió el distrito opcional al registro y se muestra en la tabla de usuarios del administrador.
+- En Reportar se puede marcar el punto exacto en un mapa de Leaflet, y arrastrar el marcador para ajustarlo. Si no se escribe una dirección, se guarda el punto con sus coordenadas.
+- El mapa del panel de administración ahora es un mapa real de Leaflet con las alertas en su ubicación, en lugar de una imagen ilustrativa. Solo aparecen las alertas que tienen coordenadas.
+- El detalle de un reporte en el panel de administración muestra su ubicación en un mapa y la foto que adjuntó el ciudadano, abierta con un enlace temporal porque el bucket es privado. Si no hay foto, lo indica.
+- La app no usa zone.js, así que las pantallas que guardan datos en propiedades normales deben avisar a Angular con `markForCheck()`. Se corrigió en el dashboard del ciudadano, que mostraba sus reportes en 0, y en el error de envío de Reportar.
 - Los interruptores de notificaciones de la configuración del administrador se guardan en su perfil.
+- Las cifras de Inicio y Login (alertas activas, reportes recibidos, emergencias verificadas y distritos con alertas) salen de la base de datos mediante la función `estadisticas_publicas`, que solo devuelve totales.
+- Al marcar el punto en Reportar, OpenStreetMap lo convierte en calle y distrito, y el reporte los guarda. Si no responde, se guardan las coordenadas.
+- El pie de página queda pegado al fondo de la ventana en las páginas con poco contenido.
+- Páginas de Soporte: `/ayuda`, `/terminos`, `/privacidad` y `/accesibilidad`, enlazadas desde el footer y desde el registro (se abren en otra pestaña para no perder el formulario).
+- Los números de emergencia de Reportar y del detalle de alerta coinciden con la tabla de contactos: 105 Policía, 116 Bomberos, 106 SAMU y 115 INDECI.
+- La campana del panel de administración muestra cuántos reportes esperan revisión y lleva a la lista de reportes.
+- Las fotos de los reportes se revisan con IA: la Edge Function `analizar-evidencia` le pregunta a Gemini si la foto corresponde a la emergencia declarada o parece una broma. El administrador ve el veredicto, la confianza y el motivo en el detalle del reporte, y puede pedir la revisión otra vez. Es solo un aviso; la decisión sigue siendo del administrador.
 - Las rutas de login, registro, dashboard y reportar se cargan bajo demanda, y el aviso del bundle inicial pasó a 600 kB.
 - Se probó el flujo completo contra Supabase con un ciudadano y un administrador de prueba. Los datos de esa prueba se borraron al terminar.
 

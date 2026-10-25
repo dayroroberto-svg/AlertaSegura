@@ -62,9 +62,8 @@ export class Contacts implements OnInit {
         this.contactos.set([
           { idContacto: 1, nombreInstitucion: 'Policía Nacional', numero: '105', descripcion: 'Seguridad ciudadana y orden público', theme: 'blue', emoji: '👮' },
           { idContacto: 2, nombreInstitucion: 'Bomberos del Perú', numero: '116', descripcion: 'Incendios, rescates y emergencias', theme: 'red', emoji: '🚒' },
-          { idContacto: 3, nombreInstitucion: 'SAMU / Ambulancia', numero: '117', descripcion: 'Atención médica de emergencia', theme: 'green', emoji: '🚑' },
+          { idContacto: 3, nombreInstitucion: 'SAMU / Ambulancia', numero: '106', descripcion: 'Atención médica de emergencia', theme: 'green', emoji: '🚑' },
           { idContacto: 4, nombreInstitucion: 'INDECI', numero: '115', descripcion: 'Defensa Civil — gestión de desastres', theme: 'orange', emoji: '🛡️' },
-          { idContacto: 5, nombreInstitucion: 'SAMU Lima', numero: '106', descripcion: 'Servicio de Atención Médica Urgente', theme: 'teal', emoji: '🏥' },
           { idContacto: 6, nombreInstitucion: 'Cruz Roja Peruana', numero: '265-8783', descripcion: 'Ayuda humanitaria y primeros auxilios', theme: 'red', emoji: '➕' },
           { idContacto: 7, nombreInstitucion: 'Hospital Nacional', numero: '411-8000', descripcion: 'Emergencias médicas complejas 24h', theme: 'blue', emoji: '🏥' },
           { idContacto: 8, nombreInstitucion: 'Línea de emergencias', numero: '911', descripcion: 'Central unificada — disponible 24/7', theme: 'purple', emoji: '📞' },

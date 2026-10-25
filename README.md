@@ -9,9 +9,9 @@ AlertaSegura es una plataforma web de seguridad ciudadana. Permite consultar eme
 - Dashboard del ciudadano con sus reportes, las alertas y sus notificaciones.
 - Lista de alertas con filtros por nivel de riesgo y tipo de emergencia, y una página de detalle para cada una.
 - Mapa de emergencias con Leaflet y OpenStreetMap, con marcadores por ubicación, categoría y estado.
-- Reportes ciudadanos con coordenadas y foto de evidencia.
+- Reportes ciudadanos con foto de evidencia. La ubicación se marca en un mapa, se detecta con el GPS o se escribe como dirección.
 - Información de prevención y contactos de emergencia.
-- Panel de administración para verificar reportes, publicar y gestionar alertas, y activar o desactivar usuarios.
+- Panel de administración para verificar reportes, publicar y gestionar alertas, ver las alertas en un mapa y activar o desactivar usuarios.
 
 ## Tecnologías
 
@@ -40,9 +40,10 @@ Dentro de `frontend/src/app/`, `client/` tiene las páginas del ciudadano, `admi
 ## Configurar Supabase
 
 1. Crea un proyecto en Supabase.
-2. En el SQL Editor, ejecuta en orden los scripts de `supabase/`: `esquema_inicial.sql`, `auth_y_rls.sql`, `logica_negocio.sql`, `ajustes_permisos.sql`, `storage_evidencias.sql`, `alerta_manual.sql` y `perfil_distrito_y_preferencias.sql`.
+2. En el SQL Editor, ejecuta en orden los scripts de `supabase/`: `esquema_inicial.sql`, `auth_y_rls.sql`, `logica_negocio.sql`, `ajustes_permisos.sql`, `storage_evidencias.sql`, `alerta_manual.sql`, `perfil_distrito_y_preferencias.sql`, `analisis_ia_evidencia.sql` y `estadisticas_publicas.sql`.
 3. Copia la URL del proyecto y la clave pública (publishable o anon) en `frontend/src/environments/environment.ts` y `environment.prod.ts`. La clave `service_role` no debe guardarse en el repositorio.
 4. En desarrollo conviene desactivar la confirmación por correo, en Authentication, Sign In / Providers, User Signups, Confirm email.
+5. Despliega la Edge Function `supabase/functions/analizar-evidencia` y guarda una clave de Google AI Studio como secreto `GEMINI_API_KEY`, en Edge Functions, Secrets. Sin esa clave la app funciona igual, pero las fotos quedan como "no se pudo revisar".
 
 ## Crear el primer administrador
 
@@ -76,6 +77,8 @@ El frontend consulta las tablas con supabase-js, y las reglas de Row Level Secur
 - `cambiar_estado_usuario`: el administrador activa o desactiva una cuenta.
 
 Las fotos de evidencia se guardan en el bucket privado `evidencias`, que acepta JPEG, PNG y WebP de hasta 5 MB.
+
+Cuando un reporte trae foto, la Edge Function `analizar-evidencia` se la pasa a Gemini (modelo `gemini-3.5-flash-lite`) junto con el tipo de emergencia declarado. Gemini responde si la foto coincide, es dudosa o parece una broma, con un motivo corto en español. El resultado se guarda en el reporte y el administrador lo ve en el detalle; nunca rechaza un reporte por su cuenta.
 
 ## Estado actual
 

@@ -6,7 +6,7 @@
     <span class="peligro-icono" aria-hidden="true">⚠️</span>
     <div>
       <p class="peligro-titulo">En caso de peligro inmediato de vida</p>
-      <p class="peligro-texto">Llama primero: <strong>105 (Bomberos)</strong> · <strong>106 (PNP)</strong> · <strong>117 (Ambulancia)</strong></p>
+      <p class="peligro-texto">Llama primero: <strong>105 (PNP)</strong> · <strong>116 (Bomberos)</strong> · <strong>106 (SAMU, ambulancia)</strong></p>
     </div>
   </div>
 
@@ -50,14 +50,18 @@
       <button class="detectar" [class.activo]="locationDetected" type="button" (click)="locateUser()">
         📍 {{ locationDetected ? 'Ubicación detectada ✓' : 'Detectar ubicación automáticamente' }}
       </button>
-      @if (locationDetected) {
-      <div class="detectada">✅ {{ form.direccion }} (detectado)</div>
-      } @else {
       <input id="direccion" type="text" name="direccion" [(ngModel)]="form.direccion"
-        placeholder="Ingresa la dirección o referencia del lugar..." />
+        placeholder="Dirección o referencia del lugar (opcional si marcas el punto)..." />
+      <div #mapaSelector class="mapa-selector" role="application" aria-label="Mapa para marcar la ubicación del reporte"></div>
+      @if (form.latitud !== null && form.longitud !== null) {
+      <div class="detectada">
+        ✅ Punto marcado: {{ direccionDetectada || form.latitud.toFixed(5) + ', ' + form.longitud.toFixed(5) }}@if (distritoDetectado) {<span> · {{ distritoDetectado }}</span>}
+      </div>
+      } @else {
+      <p class="ayuda-mapa">Toca el mapa para marcar el punto exacto. Después puedes arrastrar el marcador para ajustarlo.</p>
       }
       @if (locationError) {
-      <p class="mensaje-error" role="alert">Para ubicar el reporte en el mapa, pulsa «Detectar ubicación automáticamente» y permite el acceso a tu ubicación.</p>
+      <p class="mensaje-error" role="alert">Marca el punto en el mapa o pulsa «Detectar ubicación automáticamente» para continuar.</p>
       }
     </div>
 

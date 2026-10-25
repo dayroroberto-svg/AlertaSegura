@@ -38,7 +38,7 @@
         <div class="detalle-cabecera">
           <span class="detalle-icono" aria-hidden="true">{{ icono(alerta.categoria) }}</span>
           <div>
-            <strong>{{ categoryLabel(alerta.categoria) }}</strong>
+            <strong>{{ etiqueta(alerta.categoria) }}</strong>
             <small>{{ alerta.distrito || alerta.direccion || 'Ubicación no disponible' }}</small>
           </div>
           <button class="cerrar" type="button" aria-label="Cerrar detalle" (click)="toggleSelected(alerta)">✕</button>
@@ -58,7 +58,7 @@
           (click)="toggleSelected(alert)">
           <i [class]="'punto ' + riskClass(alert.nivelRiesgo)"></i>
           <span class="item-texto">
-            <strong>{{ categoryLabel(alert.categoria) }}</strong>
+            <strong>{{ etiqueta(alert.categoria) }}</strong>
             <small>{{ alert.distrito || alert.direccion || 'Ubicación no disponible' }}</small>
           </span>
           <span [class]="'estado ' + statusClass(alert.estadoAlerta)">{{ statusLabel(alert.estadoAlerta) }}</span>

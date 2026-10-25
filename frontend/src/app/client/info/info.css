@@ -1,0 +1,83 @@
+:host {
+  display: block;
+  background: var(--slate-50);
+}
+
+.info-container {
+  width: min(820px, 100%);
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: var(--slate-900);
+  font: 800 2.125rem var(--font-display);
+}
+
+.page-header p {
+  margin: .375rem 0 2rem;
+  color: var(--slate-500);
+  font-size: .875rem;
+}
+
+.info-card {
+  border: 1px solid var(--slate-200);
+  border-radius: 1rem;
+  padding: 1.75rem 2rem;
+  background: #fff;
+}
+
+.info-card section + section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--slate-100);
+}
+
+.info-card h2 {
+  margin: 0 0 .5rem;
+  color: var(--slate-900);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.info-card p {
+  margin: 0;
+  color: var(--slate-600);
+  font-size: .9375rem;
+  line-height: 1.65;
+}
+
+.info-card p + p {
+  margin-top: .625rem;
+}
+
+.info-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.info-links a {
+  color: var(--blue-600);
+  font-size: .875rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.info-links a:hover {
+  text-decoration: underline;
+}
+
+.info-links a:focus-visible {
+  outline: 2px solid var(--blue-300);
+  outline-offset: 2px;
+  border-radius: .25rem;
+}
+
+@media (max-width: 640px) {
+  .info-card {
+    padding: 1.25rem;
+  }
+}

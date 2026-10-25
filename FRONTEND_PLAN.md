@@ -42,7 +42,7 @@ Este documento recoge el plan de implementación del frontend.
 - [x] Adaptación responsive para navegación y acciones en móvil.
 
 ### Fase 15: módulos del ciudadano (completada)
-- [x] Reportar: formulario con ubicación, nivel de riesgo y foto de evidencia, más la pantalla de confirmación.
+- [x] Reportar: formulario con ubicación marcada en un mapa (o detectada con el GPS), nivel de riesgo y foto de evidencia, más la pantalla de confirmación.
 - [x] Alertas: lista con filtros por riesgo y tipo, y detalle de cada alerta.
 - [x] Mapa de emergencias con filtros.
 - [x] Contactos de emergencia e información de prevención.
@@ -53,7 +53,7 @@ Este documento recoge el plan de implementación del frontend.
 - [x] Creación de alertas, desde un reporte verificado o sin reporte previo, y pantalla de confirmación.
 - [x] Gestión de alertas (activa, finalizada, archivada).
 - [x] Usuarios, con activar y desactivar.
-- [x] Mapa y configuración.
+- [x] Mapa con Leaflet y OpenStreetMap, con las alertas en su ubicación real, y configuración.
 
 ### Vista pública de inicio (completada)
 - [x] Presentación con estado del sistema y alertas recientes.

@@ -9,7 +9,7 @@
       <h2>Información oportuna para actuar a tiempo.</h2>
       <p>Accede a tu cuenta para gestionar alertas y recibir notificaciones de emergencias en tu zona.</p>
       <div class="auth-stats">
-        @for (stat of stats; track stat.label) {
+        @for (stat of stats(); track stat.label) {
         <div><strong>{{ stat.value }}</strong><span>{{ stat.label }}</span></div>
         }
       </div>

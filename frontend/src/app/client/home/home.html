@@ -25,7 +25,7 @@
 
   <section class="cifras" aria-label="Cifras de la plataforma">
     <div class="cifras-inner">
-      @for (cifra of cifras; track cifra.etiqueta) {
+      @for (cifra of cifras(); track cifra.etiqueta) {
       <div class="cifra">
         <span class="cifra-icono" aria-hidden="true">{{ cifra.icono }}</span>
         <strong [class]="cifra.tono">{{ cifra.valor }}</strong>

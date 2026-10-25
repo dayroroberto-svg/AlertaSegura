@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import * as L from 'leaflet';
 import { DatosService } from '../../core/data/datos.service';
+import { etiquetaCategoria } from '../../core/data/etiquetas';
 
 interface EmergencyAlert {
   idAlerta: number;
@@ -135,6 +136,10 @@ export class Map implements OnInit, AfterViewInit, OnDestroy {
       (categoria) => categoria && !this.disasterTypes.includes(categoria),
     );
     return ['TODOS', ...this.disasterTypes, ...publicadas];
+  }
+
+  etiqueta(categoria: string): string {
+    return etiquetaCategoria(categoria);
   }
 
   categoryLabel(category: string): string {

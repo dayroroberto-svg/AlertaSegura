@@ -25,7 +25,7 @@ type ReporteFila = ReporteDb & {
   categorias_emergencia: { nombre: string } | null;
   niveles_riesgo: { nombre: string } | null;
   estados_reporte: { nombre: string } | null;
-  ubicaciones: UbicacionTexto | null;
+  ubicaciones: (UbicacionTexto & { latitud: number | null; longitud: number | null }) | null;
   perfiles: { nombres: string; apellidos: string } | null;
 };
 
@@ -39,7 +39,7 @@ type AlertaFila = AlertaDb & {
 type PerfilFila = Perfil & { roles: { nombre: string } | null };
 
 const SELECT_REPORTE =
-  '*, categorias_emergencia(nombre), niveles_riesgo(nombre), estados_reporte(nombre), ubicaciones(distrito, provincia, direccion), perfiles(nombres, apellidos)';
+  '*, categorias_emergencia(nombre), niveles_riesgo(nombre), estados_reporte(nombre), ubicaciones(distrito, provincia, direccion, latitud, longitud), perfiles(nombres, apellidos)';
 const SELECT_ALERTA =
   '*, categorias_emergencia(nombre), niveles_riesgo(nombre), estados_alerta(nombre), ubicaciones(distrito, provincia, direccion, latitud, longitud)';
 
@@ -62,6 +62,20 @@ export class AdminDataService {
     return from(this.resumenDashboard());
   }
 
+  /** Reportes que esperan revisión (pendientes o en revisión). */
+  contarPendientes(): Observable<number> {
+    return from(
+      supabase
+        .from('reportes')
+        .select('id_reporte, estados_reporte!inner(nombre)')
+        .in('estados_reporte.nombre', ['PENDIENTE', 'EN_REVISION'])
+        .then(({ data, error }) => {
+          if (error) throw error;
+          return data.length;
+        }),
+    );
+  }
+
   listarReportes(): Observable<Reporte[]> {
     return from(
       supabase
@@ -78,6 +92,28 @@ export class AdminDataService {
 
   obtenerReporte(id: string): Observable<Reporte | null> {
     return from(this.reportePorCodigo(id));
+  }
+
+  /** Enlace temporal (1 hora) para ver la foto del reporte; el bucket es privado. */
+  urlEvidencia(ruta: string): Observable<string | null> {
+    return from(
+      supabase.storage
+        .from('evidencias')
+        .createSignedUrl(ruta, 3600)
+        .then(({ data, error }) => (error ? null : data.signedUrl)),
+    );
+  }
+
+  /** Vuelve a pedir la revisión de la foto con IA y devuelve el reporte actualizado. */
+  analizarEvidencia(id: string): Observable<Reporte | null> {
+    return from(
+      (async () => {
+        const idReporte = await this.idReporte(id);
+        if (idReporte === null) return null;
+        await this.datos.analizarEvidencia(idReporte);
+        return this.reportePorCodigo(id);
+      })(),
+    );
   }
 
   verificarReporte(id: string, comentario?: string): Observable<Reporte | null> {
@@ -193,6 +229,16 @@ export class AdminDataService {
       estado: this.aEstadoReporte(fila.estados_reporte?.nombre),
       descripcion: fila.descripcion ?? fila.titulo,
       ciudadano: fila.perfiles ? `${fila.perfiles.nombres} ${fila.perfiles.apellidos}` : 'Ciudadano',
+      latitud: fila.ubicaciones?.latitud != null ? Number(fila.ubicaciones.latitud) : null,
+      longitud: fila.ubicaciones?.longitud != null ? Number(fila.ubicaciones.longitud) : null,
+      evidencia: fila.evidencia_url,
+      ia: fila.ia_veredicto
+        ? {
+            veredicto: fila.ia_veredicto,
+            confianza: fila.ia_confianza != null ? Number(fila.ia_confianza) : null,
+            motivo: fila.ia_motivo ?? '',
+          }
+        : null,
     };
   }
 
@@ -302,35 +348,18 @@ export class AdminDataService {
   }
 
   private async pinesMapa(): Promise<PinMapa[]> {
-    const alertas = (await this.datos.alertas()).filter((a) => a.ubicaciones?.latitud != null && a.ubicaciones?.longitud != null);
-    if (alertas.length === 0) return [];
-
-    // El mapa del panel es un dibujo, así que los pines se reparten según el rango de coordenadas.
-    const latitudes = alertas.map((a) => a.ubicaciones!.latitud as number);
-    const longitudes = alertas.map((a) => a.ubicaciones!.longitud as number);
-    const [minLat, maxLat] = this.rango(latitudes);
-    const [minLng, maxLng] = this.rango(longitudes);
-
-    return alertas.map((a) => ({
-      id: a.codigo_alerta,
-      tipo: etiquetaCategoria(a.categorias_emergencia?.nombre ?? 'OTROS'),
-      ubicacion: textoUbicacion(a.ubicaciones),
-      nivel: this.aNivel(a.niveles_riesgo?.nombre),
-      left: `${this.porcentaje(a.ubicaciones!.longitud as number, minLng, maxLng)}%`,
-      top: `${100 - this.porcentaje(a.ubicaciones!.latitud as number, minLat, maxLat)}%`,
-      desc: a.titulo,
-    }));
-  }
-
-  private rango(valores: number[]): [number, number] {
-    const min = Math.min(...valores);
-    const max = Math.max(...valores);
-    const margen = Math.max((max - min) * 0.1, 0.025);
-    return [min - margen, max + margen];
-  }
-
-  private porcentaje(valor: number, min: number, max: number): number {
-    return Math.round(Math.min(95, Math.max(5, ((valor - min) / (max - min)) * 100)));
+    const alertas = await this.datos.alertas();
+    return alertas
+      .filter((a) => a.ubicaciones?.latitud != null && a.ubicaciones?.longitud != null)
+      .map((a) => ({
+        id: a.codigo_alerta,
+        tipo: etiquetaCategoria(a.categorias_emergencia?.nombre ?? 'OTROS'),
+        ubicacion: textoUbicacion(a.ubicaciones),
+        nivel: this.aNivel(a.niveles_riesgo?.nombre),
+        latitud: Number(a.ubicaciones!.latitud),
+        longitud: Number(a.ubicaciones!.longitud),
+        desc: a.titulo,
+      }));
   }
 
   private async configuracion(): Promise<ConfiguracionAdmin> {

@@ -1,7 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { DatosService, EstadisticasPublicas } from '../../../core/data/datos.service';
 
 @Component({
   selector: 'app-login',
@@ -25,13 +26,25 @@ export class Login {
   readonly userNotFound = signal(false);
   rememberSession = true;
 
-  // Cifras de presentación del prototipo; no vienen de la base de datos.
-  readonly stats = [
-    { value: '47', label: 'Alertas activas' },
-    { value: '1,284', label: 'Reportes recibidos' },
-    { value: '18', label: 'Regiones cubiertas' },
-    { value: '24/7', label: 'Monitoreo continuo' },
-  ];
+  private readonly estadisticas = signal<EstadisticasPublicas | null>(null);
+
+  // Totales reales de la base de datos; muestra "—" mientras cargan
+  readonly stats = computed(() => {
+    const datos = this.estadisticas();
+    const valor = (n: number | undefined) => (datos && n !== undefined ? n.toLocaleString('es-PE') : '—');
+    return [
+      { value: valor(datos?.alertas_activas), label: 'Alertas activas' },
+      { value: valor(datos?.reportes_recibidos), label: 'Reportes recibidos' },
+      { value: valor(datos?.distritos), label: 'Distritos con alertas' },
+      { value: '24/7', label: 'Monitoreo continuo' },
+    ];
+  });
+
+  constructor() {
+    inject(DatosService)
+      .estadisticas()
+      .then((datos) => this.estadisticas.set(datos), () => undefined);
+  }
 
   submit(): void {
     if (this.loginForm.invalid) {

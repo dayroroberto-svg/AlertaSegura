@@ -12,6 +12,18 @@ export interface Reporte {
   estado: EstadoReporte;
   descripcion: string;
   ciudadano: string;
+  latitud: number | null;
+  longitud: number | null;
+  /** Ruta de la foto en el bucket privado `evidencias`, o null si no hay foto. */
+  evidencia: string | null;
+  /** Revisión de la foto con IA, o null si todavía no se hizo. */
+  ia: RevisionIa | null;
+}
+
+export interface RevisionIa {
+  veredicto: 'COINCIDE' | 'DUDOSA' | 'NO_COINCIDE' | 'ERROR';
+  confianza: number | null;
+  motivo: string;
 }
 
 export interface Alerta {
@@ -83,8 +95,8 @@ export interface PinMapa {
   tipo: string;
   ubicacion: string;
   nivel: NivelRiesgo;
-  left: string;
-  top: string;
+  latitud: number;
+  longitud: number;
   desc: string;
 }
 
