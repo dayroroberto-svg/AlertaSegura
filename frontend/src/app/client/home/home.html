@@ -1,0 +1,68 @@
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="hero-badge"><i aria-hidden="true"></i>Sistema activo · {{ activas() }} alertas en tiempo real</div>
+        <h1>Mantente<br />informado.<br /><span>Actúa a tiempo.</span></h1>
+        <p>AlertaSegura centraliza información de emergencias, desastres naturales y accidentes para que puedas tomar decisiones rápidas y seguras.</p>
+        <div class="hero-acciones">
+          <a class="boton-claro" routerLink="/alertas">Ver alertas actuales →</a>
+          <a class="boton-rojo" routerLink="/reportar">🚨 Reportar emergencia</a>
+        </div>
+      </div>
+
+      <div class="hero-tipos">
+        @for (tipo of tipos; track tipo.categoria) {
+        <a class="tipo" routerLink="/alertas" [queryParams]="{ categoria: tipo.categoria }">
+          <span class="tipo-icono" aria-hidden="true">{{ tipo.icono }}</span>
+          <strong>{{ tipo.nombre }}</strong>
+          <small>{{ contar(tipo.categoria) }} {{ contar(tipo.categoria) === 1 ? 'activo' : 'activos' }}</small>
+        </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="cifras" aria-label="Cifras de la plataforma">
+    <div class="cifras-inner">
+      @for (cifra of cifras; track cifra.etiqueta) {
+      <div class="cifra">
+        <span class="cifra-icono" aria-hidden="true">{{ cifra.icono }}</span>
+        <strong [class]="cifra.tono">{{ cifra.valor }}</strong>
+        <span>{{ cifra.etiqueta }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <section class="recientes">
+    <div class="recientes-cabecera">
+      <div>
+        <h2>Alertas recientes</h2>
+        <p>Últimas emergencias verificadas y activas</p>
+      </div>
+      <a routerLink="/alertas">Ver todas →</a>
+    </div>
+    <div class="recientes-rejilla">
+      @for (alerta of recientes(); track alerta.idAlerta) {
+      <app-alerta-card [alerta]="alerta" />
+      }
+    </div>
+  </section>
+
+  <section class="proceso">
+    <div class="proceso-inner">
+      <h2>¿Cómo funciona AlertaSegura?</h2>
+      <div class="pasos">
+        @for (paso of pasos; track paso.numero) {
+        <article class="paso">
+          <span class="paso-icono" aria-hidden="true">{{ paso.icono }}</span>
+          <p class="paso-numero">{{ paso.numero }}</p>
+          <h3>{{ paso.titulo }}</h3>
+          <p class="paso-texto">{{ paso.texto }}</p>
+        </article>
+        }
+      </div>
+    </div>
+  </section>
+</main>

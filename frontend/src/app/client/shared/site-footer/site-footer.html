@@ -1,0 +1,36 @@
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-intro">
+      <a class="footer-brand" routerLink="/" aria-label="AlertaSegura, ir al inicio">
+        <span class="footer-brand-mark" aria-hidden="true">🛡</span>
+        <span>AlertaSegura</span>
+      </a>
+      <p>Información oportuna para actuar a tiempo. Sistema Nacional de Emergencias.</p>
+    </div>
+
+    <nav class="footer-column" aria-label="Enlaces de plataforma">
+      <h2>Plataforma</h2>
+      <a routerLink="/alertas">Alertas</a>
+      <a routerLink="/mapa">Mapa de emergencias</a>
+      <a routerLink="/prevencion">Prevención</a>
+      <a routerLink="/contactos">Contactos</a>
+    </nav>
+
+    <nav class="footer-column" aria-label="Enlaces ciudadanos">
+      <h2>Ciudadanos</h2>
+      <a routerLink="/reportar">Reportar emergencia</a>
+      <a [routerLink]="auth.session() ? '/dashboard' : '/login'">Mis reportes</a>
+      <a [routerLink]="auth.session() ? '/dashboard' : '/login'">Notificaciones</a>
+      <a [routerLink]="auth.session() ? '/dashboard' : '/login'">Mi cuenta</a>
+    </nav>
+
+    <div class="footer-column" role="group" aria-label="Soporte">
+      <h2>Soporte</h2>
+      <span>Centro de ayuda</span>
+      <span>Términos de uso</span>
+      <span>Privacidad</span>
+      <span>Accesibilidad</span>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 AlertaSegura — Sistema Nacional de Información de Emergencias del Perú</div>
+</footer>

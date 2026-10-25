@@ -1,0 +1,72 @@
+<main class="pagina">
+  <h1>Mapa de emergencias</h1>
+  <p class="subtitulo">Distribución geográfica de alertas activas — Perú</p>
+
+  <div class="pastillas" role="group" aria-label="Filtrar por tipo de emergencia">
+    @for (pill of pills; track pill.valor) {
+    <button type="button" [class.activa]="selectedCategory() === pill.valor" [attr.aria-pressed]="selectedCategory() === pill.valor"
+      (click)="setCategory(pill.valor)">{{ pill.etiqueta }}</button>
+    }
+  </div>
+
+  <div class="layout">
+    <div class="mapa">
+      <div id="emergency-map" aria-label="Mapa geolocalizado de emergencias"></div>
+      <div class="chip-zona">🗺 Lima Metropolitana, Perú</div>
+      <button class="ubicacion" type="button" (click)="locateUser()">📍 Usar mi ubicación</button>
+      @if (locationError()) {
+      <p class="aviso-ubicacion" role="alert">No se pudo obtener tu ubicación. Verifica los permisos del navegador.</p>
+      }
+      <div class="leyenda">
+        <p>Riesgo</p>
+        <span><i class="alto"></i>Alto</span>
+        <span><i class="medio"></i>Medio</span>
+        <span><i class="bajo"></i>Bajo</span>
+      </div>
+      @if (loading()) {
+      <div class="mensaje">Cargando alertas...</div>
+      } @else if (error()) {
+      <div class="mensaje error">No se pudo conectar con el servicio de alertas.</div>
+      } @else if (!filteredAlerts().length) {
+      <div class="mensaje">No hay alertas para este filtro.</div>
+      }
+    </div>
+
+    <aside class="lateral" aria-label="Alertas activas">
+      @if (selected(); as alerta) {
+      <section class="detalle">
+        <div class="detalle-cabecera">
+          <span class="detalle-icono" aria-hidden="true">{{ icono(alerta.categoria) }}</span>
+          <div>
+            <strong>{{ categoryLabel(alerta.categoria) }}</strong>
+            <small>{{ alerta.distrito || alerta.direccion || 'Ubicación no disponible' }}</small>
+          </div>
+          <button class="cerrar" type="button" aria-label="Cerrar detalle" (click)="toggleSelected(alerta)">✕</button>
+        </div>
+        <div class="insignias">
+          <span class="riesgo" [class]="'riesgo ' + riskClass(alerta.nivelRiesgo)">{{ riskLabel(alerta.nivelRiesgo) }}</span>
+          <span [class]="'estado ' + statusClass(alerta.estadoAlerta)">{{ statusLabel(alerta.estadoAlerta) }}</span>
+        </div>
+        <p>{{ alerta.descripcion || alerta.titulo }}</p>
+      </section>
+      }
+
+      <section class="lista">
+        <h2>Alertas activas ({{ filteredAlerts().length }})</h2>
+        @for (alert of filteredAlerts(); track alert.idAlerta) {
+        <button type="button" class="item" [class.seleccionado]="selected()?.idAlerta === alert.idAlerta"
+          (click)="toggleSelected(alert)">
+          <i [class]="'punto ' + riskClass(alert.nivelRiesgo)"></i>
+          <span class="item-texto">
+            <strong>{{ categoryLabel(alert.categoria) }}</strong>
+            <small>{{ alert.distrito || alert.direccion || 'Ubicación no disponible' }}</small>
+          </span>
+          <span [class]="'estado ' + statusClass(alert.estadoAlerta)">{{ statusLabel(alert.estadoAlerta) }}</span>
+        </button>
+        } @empty {
+        <p class="vacio">No hay alertas activas que coincidan con el filtro.</p>
+        }
+      </section>
+    </aside>
+  </div>
+</main>

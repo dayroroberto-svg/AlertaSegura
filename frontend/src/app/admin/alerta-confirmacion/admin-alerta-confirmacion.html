@@ -1,0 +1,43 @@
+@if (alerta(); as a) {
+  <div style="max-width: 520px; width: 90%; padding: 28px">
+    <div class="stat-card" style="text-align: center; padding: 40px">
+      <div style="width: 72px; height: 72px; border-radius: 50%; background: #f0fdf4; border: 2px solid #bbf7d0; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px">
+        <app-admin-icon name="check" [size]="32" color="#16a34a" />
+      </div>
+      <h2 style="font-size: 22px; font-weight: 700; margin: 0 0 8px; color: var(--text)">Alerta publicada correctamente</h2>
+      <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 28px; line-height: 1.5">
+        La alerta oficial ha sido publicada y estará disponible para todos los ciudadanos de la plataforma.
+      </p>
+
+      <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 24px; text-align: left">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px">
+          <div>
+            <p class="meta-label" style="margin-bottom: 3px">Código de alerta</p>
+            <p class="mono" style="font-size: 14px; font-weight: 600; margin: 0; color: var(--blue)">{{ a.id }}</p>
+          </div>
+          <div>
+            <p class="meta-label" style="margin-bottom: 3px">Tipo de emergencia</p>
+            <p style="font-size: 14px; font-weight: 600; margin: 0; color: var(--text)">{{ a.tipo || 'Incendio' }}</p>
+          </div>
+          <div>
+            <p class="meta-label" style="margin-bottom: 3px">Estado</p>
+            <p style="font-size: 14px; font-weight: 600; margin: 0; color: var(--text)">Activa</p>
+          </div>
+          <div>
+            <p class="meta-label" style="margin-bottom: 3px">Fecha de publicación</p>
+            <p style="font-size: 14px; font-weight: 600; margin: 0; color: var(--text)">{{ publicacion(a) }}</p>
+          </div>
+        </div>
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 6px">
+          <div style="width: 8px; height: 8px; border-radius: 50%; background: #16a34a"></div>
+          <span style="font-size: 12px; color: #16a34a; font-weight: 600">Alerta activa y visible para ciudadanos</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px">
+        <button class="btn-secondary" style="flex: 1" type="button" routerLink="/admin/alertas">Ver alerta</button>
+        <button class="btn-primary" style="flex: 1" type="button" routerLink="/admin/dashboard">Volver al panel</button>
+      </div>
+    </div>
+  </div>
+}

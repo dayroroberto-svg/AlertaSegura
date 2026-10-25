@@ -1,0 +1,27 @@
+<main class="pagina">
+  <div class="contenido">
+    <div class="sello" aria-hidden="true">✅</div>
+    <h1>¡Reporte recibido!</h1>
+    <p class="intro">Tu reporte ha sido recibido correctamente y será revisado por nuestro equipo de verificación antes de publicarse.</p>
+
+    <dl class="tarjeta">
+      @if (numero) {
+      <div><dt>Número de reporte</dt><dd class="numero">{{ numero }}</dd></div>
+      }
+      <div><dt>Estado</dt><dd><span class="estado"><i></i>En revisión</span></dd></div>
+      <div><dt>Fecha de envío</dt><dd>{{ reporte.fechaEnvio | date: 'dd/MM/yyyy · HH:mm' }}</dd></div>
+      <div><dt>Tiempo estimado</dt><dd>15–30 minutos</dd></div>
+    </dl>
+
+    @if (reporte.evidenciaFallida) {
+    <p class="aviso-error" role="alert">El reporte se registró, pero no se pudo adjuntar la imagen.</p>
+    }
+
+    <p class="nota">📧 Recibirás una notificación cuando tu reporte sea procesado.</p>
+
+    <div class="acciones">
+      <a class="boton secundario" routerLink="/">Volver al inicio</a>
+      <a class="boton primario" routerLink="/dashboard">Ver mis reportes</a>
+    </div>
+  </div>
+</main>

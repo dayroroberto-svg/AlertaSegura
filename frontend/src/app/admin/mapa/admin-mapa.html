@@ -1,0 +1,99 @@
+<app-admin-topbar title="Mapa de emergencias" subtitle="Vista en tiempo real de alertas activas" />
+<div class="adm-body">
+  <div style="display: grid; grid-template-columns: 1fr 300px; gap: 16px">
+    <div class="stat-card" style="padding: 0; overflow: hidden">
+      <div style="padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: center; background: white">
+        <app-admin-icon name="filter" [size]="14" color="#64748b" />
+        <span style="font-size: 13px; font-weight: 600; color: var(--text-muted)">Filtrar:</span>
+        <select class="input-field" style="width: 160px" [ngModel]="filtroNivel()" (ngModelChange)="filtroNivel.set($event)">
+          <option value="">Todos los niveles</option>
+          <option value="alto">Alto riesgo</option>
+          <option value="medio">Riesgo medio</option>
+          <option value="bajo">Riesgo bajo</option>
+        </select>
+        <div style="display: flex; gap: 8px; margin-left: auto">
+          @for (l of leyenda; track l.nivel) {
+            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted)">
+              <div [style.background]="color(l.nivel)" style="width: 10px; height: 10px; border-radius: 50%"></div>{{ l.etiqueta }}
+            </div>
+          }
+        </div>
+      </div>
+
+      <div style="position: relative; height: 480px; overflow: hidden; background: #e8f0f8">
+        <img
+          src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=900&h=500&fit=crop&auto=format"
+          alt="Mapa de Lima, Perú"
+          style="width: 100%; height: 100%; object-fit: cover; opacity: 0.55"
+        />
+        <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(15, 45, 92, 0.1), rgba(15, 45, 92, 0.3))"></div>
+
+        @for (x of lineasVerticales; track x) {
+          <div [style.left.%]="x" style="position: absolute; top: 0; bottom: 0; border-left: 1px solid rgba(255, 255, 255, 0.08)"></div>
+        }
+        @for (y of lineasHorizontales; track y) {
+          <div [style.top.%]="y" style="position: absolute; left: 0; right: 0; border-top: 1px solid rgba(255, 255, 255, 0.08)"></div>
+        }
+
+        @for (pin of filtrados(); track pin.id) {
+          <div
+            class="map-marker"
+            [style.left]="pin.left"
+            [style.top]="pin.top"
+            [style.background]="color(pin.nivel)"
+            [style.transform]="seleccionado()?.id === pin.id ? 'scale(1.6)' : 'scale(1)'"
+            [title]="pin.tipo"
+            (click)="alternar(pin)"
+          ></div>
+        }
+
+        @if (seleccionado(); as s) {
+          <div
+            [style.left]="s.left"
+            [style.top]="'calc(' + s.top + ' + 18px)'"
+            [style.border-color]="color(s.nivel)"
+            style="position: absolute; background: white; border-radius: 8px; padding: 10px 14px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); font-size: 13px; min-width: 200px; z-index: 10; border: 2px solid"
+          >
+            <div style="font-weight: 700; margin-bottom: 4px; color: var(--text)">{{ s.tipo }} — {{ s.ubicacion }}</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px">{{ s.desc }}</div>
+            <div style="display: flex; align-items: center; gap: 6px">
+              <app-admin-risk-badge [level]="s.nivel" />
+              <span class="mono" style="font-size: 11px; color: var(--text-muted)">{{ s.id }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="stat-card" style="padding: 0; overflow: hidden">
+      <div style="padding: 14px 20px; border-bottom: 1px solid var(--border)">
+        <h3 style="font-size: 14px; font-weight: 700; margin: 0">Alertas en mapa</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin: 2px 0 0">{{ filtrados().length }} emergencias activas</p>
+      </div>
+      <div style="overflow: auto; max-height: 480px">
+        @for (pin of filtrados(); track pin.id; let last = $last) {
+          <div
+            [style.border-bottom]="last ? 'none' : '1px solid var(--border)'"
+            [style.background]="seleccionado()?.id === pin.id ? '#f0f4f8' : 'white'"
+            style="padding: 14px 18px; cursor: pointer; transition: background 0.1s"
+            (click)="alternar(pin)"
+          >
+            <div style="display: flex; align-items: flex-start; gap: 10px">
+              <div [style.background]="color(pin.nivel)" style="width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; flex-shrink: 0"></div>
+              <div style="flex: 1">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text)">{{ pin.tipo }}</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin: 2px 0 6px; display: flex; align-items: center; gap: 4px">
+                  <app-admin-icon name="pin" [size]="11" />{{ pin.ubicacion }}
+                </div>
+                <div style="display: flex; gap: 6px; align-items: center">
+                  <app-admin-risk-badge [level]="pin.nivel" />
+                  <span class="mono" style="font-size: 11px; color: var(--text-muted)">{{ pin.id }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

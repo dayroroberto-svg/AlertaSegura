@@ -1,0 +1,110 @@
+<app-admin-topbar title="Crear alerta pública" [subtitle]="reporte() ? 'Basada en reporte ' + reporte()!.id : 'Nueva alerta'">
+  <button class="btn-secondary btn-flex" type="button" [routerLink]="reporte() ? ['/admin/reportes', reporte()!.id] : '/admin/alertas'">
+    <app-admin-icon name="arrow" [size]="14" />Volver
+  </button>
+</app-admin-topbar>
+<div class="adm-body">
+  @let f = form();
+  <div [style.grid-template-columns]="vistaPrevia() ? '1fr 360px' : '1fr'" [style.max-width]="vistaPrevia() ? '100%' : '720px'" style="display: grid; gap: 16px">
+    <div class="stat-card">
+      <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 20px">Información de la alerta</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px">
+        <div style="grid-column: 1 / -1">
+          <label class="field-label">Título de la alerta *</label>
+          <input class="input-field" [ngModel]="f.titulo" (ngModelChange)="actualizar('titulo', $event)" placeholder="Ej. Alerta por incendio en Miraflores" />
+        </div>
+        <div>
+          <label class="field-label">Tipo de emergencia *</label>
+          <select class="input-field" [ngModel]="f.tipo" (ngModelChange)="actualizar('tipo', $event)">
+            <option value="">Seleccionar...</option>
+            @for (t of tipos; track t) {
+              <option>{{ t }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Nivel de riesgo *</label>
+          <div style="display: flex; gap: 8px">
+            @for (n of niveles; track n) {
+              <button
+                type="button"
+                (click)="actualizar('nivel', n)"
+                [style.border-color]="f.nivel === n ? colorNivel(n) : 'var(--border)'"
+                [style.background]="f.nivel === n ? fondoNivel(n) : 'white'"
+                [style.color]="colorNivel(n)"
+                style="flex: 1; padding: 8px 0; border-radius: 8px; border: 2px solid; font-weight: 600; font-size: 13px; cursor: pointer"
+              >
+                {{ etiquetaNivel(n) }}
+              </button>
+            }
+          </div>
+        </div>
+        <div>
+          <label class="field-label">Ubicación *</label>
+          <input class="input-field" [ngModel]="f.ubicacion" (ngModelChange)="actualizar('ubicacion', $event)" placeholder="Ej. Miraflores, Lima" />
+        </div>
+        <div>
+          <label class="field-label">Fecha</label>
+          <input type="date" class="input-field" [ngModel]="f.fecha" (ngModelChange)="actualizar('fecha', $event)" />
+        </div>
+        <div>
+          <label class="field-label">Hora</label>
+          <input type="time" class="input-field" [ngModel]="f.hora" (ngModelChange)="actualizar('hora', $event)" />
+        </div>
+        <div>
+          <label class="field-label">Estado de emergencia</label>
+          <select class="input-field" [ngModel]="f.estado" (ngModelChange)="actualizar('estado', $event)">
+            <option>Activa</option><option>En control</option><option>Controlada</option>
+          </select>
+        </div>
+        <div style="grid-column: 1 / -1">
+          <label class="field-label">Descripción *</label>
+          <textarea class="input-field" rows="4" style="resize: vertical" [ngModel]="f.descripcion" (ngModelChange)="actualizar('descripcion', $event)" placeholder="Descripción detallada de la emergencia..."></textarea>
+        </div>
+        <div style="grid-column: 1 / -1">
+          <label class="field-label">Recomendaciones para ciudadanos</label>
+          <textarea class="input-field" rows="3" style="resize: vertical" [ngModel]="f.recomendaciones" (ngModelChange)="actualizar('recomendaciones', $event)"></textarea>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border)">
+        <button class="btn-secondary btn-flex" type="button" (click)="vistaPrevia.set(!vistaPrevia())">
+          <app-admin-icon name="eye" [size]="14" />{{ vistaPrevia() ? 'Ocultar' : 'Vista previa' }}
+        </button>
+        <button class="btn-primary btn-flex" style="margin-left: auto; gap: 8px" type="button" (click)="publicar()">
+          <app-admin-icon name="alerts" [size]="15" />Publicar alerta
+        </button>
+      </div>
+    </div>
+
+    @if (vistaPrevia()) {
+      <div>
+        <div class="meta-label" style="margin-bottom: 10px">Vista previa — vista ciudadano</div>
+        <div style="border: 2px dashed var(--border); border-radius: 12px; overflow: hidden; background: white">
+          <div [style.background]="colorNivel(f.nivel)" style="padding: 14px 18px; display: flex; align-items: center; gap: 10px">
+            <app-admin-icon name="alerts" [size]="18" color="white" />
+            <div>
+              <div style="color: white; font-weight: 700; font-size: 13px">ALERTA OFICIAL</div>
+              <div style="color: rgba(255, 255, 255, 0.85); font-size: 11px">AlertaSegura · {{ f.estado }}</div>
+            </div>
+            <div style="margin-left: auto; background: rgba(255, 255, 255, 0.25); border-radius: 20px; padding: 3px 10px; color: white; font-size: 11px; font-weight: 700">
+              RIESGO {{ f.nivel.toUpperCase() }}
+            </div>
+          </div>
+          <div style="padding: 18px">
+            <h4 style="font-size: 15px; font-weight: 700; margin: 0 0 8px">{{ f.titulo || 'Título de la alerta' }}</h4>
+            <div style="display: flex; gap: 12px; margin-bottom: 12px">
+              <span style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px"><app-admin-icon name="pin" [size]="12" />{{ f.ubicacion || 'Ubicación' }}</span>
+              <span style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px"><app-admin-icon name="clock" [size]="12" />{{ f.fecha }}</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text); margin: 0 0 12px; line-height: 1.6">{{ f.descripcion || 'Descripción de la emergencia...' }}</p>
+            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px">
+              <p style="font-size: 11px; font-weight: 700; color: #92400e; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.05em">Recomendaciones</p>
+              <p style="font-size: 12px; color: #92400e; margin: 0; line-height: 1.5">{{ f.recomendaciones }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

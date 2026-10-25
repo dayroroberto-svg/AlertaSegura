@@ -1,0 +1,29 @@
+<header class="site-header">
+  <nav class="site-nav" aria-label="Navegación principal">
+    <a class="brand" routerLink="/" aria-label="AlertaSegura, ir al inicio">
+      <span class="brand-mark" aria-hidden="true">🛡</span>
+      <span class="brand-name">Alerta<strong>Segura</strong></span>
+    </a>
+
+    <div class="nav-links">
+      <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
+      <a class="nav-link" routerLink="/alertas" routerLinkActive="active">Alertas</a>
+      <a class="nav-link" routerLink="/mapa" routerLinkActive="active">Mapa</a>
+      <a class="nav-link" routerLink="/reportar" routerLinkActive="active">Reportar</a>
+      <a class="nav-link" routerLink="/prevencion" routerLinkActive="active">Prevención</a>
+      <a class="nav-link" routerLink="/contactos" routerLinkActive="active">Contactos</a>
+    </div>
+
+    <div class="nav-actions">
+      @if (auth.session(); as session) {
+      <a class="profile-link" [routerLink]="session.rol === 'ADMINISTRADOR' ? '/admin' : '/dashboard'" [attr.aria-label]="session.rol === 'ADMINISTRADOR' ? 'Abrir el panel de administración' : 'Abrir mi dashboard'">
+        <span class="profile-avatar">{{ session.nombres.charAt(0) }}{{ session.apellidos.charAt(0) }}</span>
+        <span class="profile-name">{{ session.nombres }}</span>
+      </a>
+      } @else {
+      <a class="login-link" routerLink="/login">Iniciar sesión</a>
+      <a class="register-link" routerLink="/registro">Registrarse</a>
+      }
+    </div>
+  </nav>
+</header>

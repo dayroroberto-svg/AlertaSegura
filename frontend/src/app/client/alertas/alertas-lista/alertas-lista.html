@@ -1,0 +1,56 @@
+<main class="pagina">
+  <header class="encabezado">
+    <h1>Alertas de emergencia</h1>
+    <p>Información verificada sobre emergencias activas y recientes</p>
+  </header>
+
+  <section class="filtros" aria-label="Filtros de alertas">
+    <label>
+      <span>Tipo de emergencia</span>
+      <select [value]="categoria()" (change)="alCambiarCategoria($event)">
+        <option value="">Todos</option>
+        @for (item of categorias; track item) {
+        <option [value]="item">{{ item }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>Nivel de riesgo</span>
+      <select [value]="riesgo()" (change)="alCambiarRiesgo($event)">
+        <option value="">Todos</option>
+        @for (nivel of niveles; track nivel[0]) {
+        <option [value]="nivel[0]">{{ nivel[1] }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>Período</span>
+      <select [value]="periodo()" (change)="alCambiarPeriodo($event)">
+        @for (item of periodos; track item.valor) {
+        <option [value]="item.valor">{{ item.etiqueta }}</option>
+        }
+      </select>
+    </label>
+    <button class="limpiar" type="button" (click)="limpiar()">Limpiar</button>
+    <span class="resultados" role="status">{{ filtradas().length }} {{ filtradas().length === 1 ? 'resultado' : 'resultados' }}</span>
+  </section>
+
+  <ul class="leyenda" aria-label="Leyenda de riesgo">
+    <li><i class="punto alto"></i>Alto riesgo</li>
+    <li><i class="punto medio"></i>Riesgo medio</li>
+    <li><i class="punto bajo"></i>Riesgo bajo</li>
+  </ul>
+
+  @if (filtradas().length) {
+  <div class="rejilla">
+    @for (alerta of filtradas(); track alerta.idAlerta) {
+    <app-alerta-card [alerta]="alerta" />
+    }
+  </div>
+  } @else {
+  <div class="vacio">
+    <strong>No hay alertas con esos filtros.</strong>
+    <button type="button" (click)="limpiar()">Ver todas las alertas</button>
+  </div>
+  }
+</main>

@@ -1,0 +1,107 @@
+<main class="pagina">
+  <h1>Reportar emergencia</h1>
+  <p class="subtitulo">Completa el formulario. Tu reporte será revisado antes de ser publicado.</p>
+
+  <div class="peligro">
+    <span class="peligro-icono" aria-hidden="true">⚠️</span>
+    <div>
+      <p class="peligro-titulo">En caso de peligro inmediato de vida</p>
+      <p class="peligro-texto">Llama primero: <strong>105 (Bomberos)</strong> · <strong>106 (PNP)</strong> · <strong>117 (Ambulancia)</strong></p>
+    </div>
+  </div>
+
+  @if (loading) {
+  <div class="estado" role="status">
+    <div class="spinner"></div>
+    <p>Enviando reporte...</p>
+  </div>
+  } @else if (error) {
+  <div class="estado" role="alert">
+    <span class="estado-icono error" aria-hidden="true">✗</span>
+    <h2>Error al enviar el reporte</h2>
+    <p>{{ errorMessage || 'Hubo un problema al procesar tu reporte. Por favor, intenta nuevamente.' }}</p>
+    <button class="enviar corto" type="button" (click)="retry()">Reintentar</button>
+  </div>
+  } @else {
+  <form class="formulario" (ngSubmit)="onSubmit()" novalidate>
+    <div class="fila">
+      <div class="campo">
+        <label for="tipo">Tipo de emergencia *</label>
+        <select id="tipo" name="tipo" [(ngModel)]="form.tipo">
+          <option value="">Seleccionar tipo...</option>
+          @for (tipo of tipos; track tipo.etiqueta) {
+          <option [value]="tipo.etiqueta">{{ tipo.etiqueta }}</option>
+          }
+        </select>
+      </div>
+      <div class="campo">
+        <label for="nivel">Nivel de gravedad *</label>
+        <select id="nivel" name="nivelRiesgo" [(ngModel)]="form.nivelRiesgo">
+          <option value="">Seleccionar nivel...</option>
+          @for (nivel of niveles; track nivel.valor) {
+          <option [value]="nivel.valor">{{ nivel.etiqueta }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="direccion">Ubicación *</label>
+      <button class="detectar" [class.activo]="locationDetected" type="button" (click)="locateUser()">
+        📍 {{ locationDetected ? 'Ubicación detectada ✓' : 'Detectar ubicación automáticamente' }}
+      </button>
+      @if (locationDetected) {
+      <div class="detectada">✅ {{ form.direccion }} (detectado)</div>
+      } @else {
+      <input id="direccion" type="text" name="direccion" [(ngModel)]="form.direccion"
+        placeholder="Ingresa la dirección o referencia del lugar..." />
+      }
+      @if (locationError) {
+      <p class="mensaje-error" role="alert">Para ubicar el reporte en el mapa, pulsa «Detectar ubicación automáticamente» y permite el acceso a tu ubicación.</p>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="descripcion">Descripción de la situación *</label>
+      <textarea id="descripcion" name="descripcion" rows="4" [(ngModel)]="form.descripcion"
+        placeholder="Describe con detalle lo que está ocurriendo..."></textarea>
+    </div>
+
+    <div class="campo">
+      <label for="fecha">Fecha y hora del incidente</label>
+      <input id="fecha" class="auto" type="datetime-local" name="fechaIncidente" [(ngModel)]="form.fechaIncidente" />
+    </div>
+
+    <div class="campo">
+      <label for="imagen">Adjuntar imagen (opcional)</label>
+      <input #imagenInput class="oculto" type="file" id="imagen" accept="image/jpeg,image/png,image/webp"
+        (change)="onFileChange($event)" />
+      @if (hasImage) {
+      <div class="vista-previa">
+        <img [src]="getImageUrl()" alt="Vista previa de la evidencia" />
+        <button type="button" class="quitar" (click)="removeImage()">Quitar imagen</button>
+      </div>
+      } @else {
+      <label class="zona-subida" [class.arrastrando]="dragging" for="imagen"
+        (dragover)="$event.preventDefault(); dragging = true" (dragleave)="dragging = false" (drop)="onDrop($event)">
+        <span class="zona-icono" aria-hidden="true">📸</span>
+        <span class="zona-texto">Arrastra una imagen o <b>selecciona un archivo</b></span>
+        <small>PNG, JPG o WebP hasta 5 MB</small>
+      </label>
+      }
+    </div>
+
+    <div class="cierre">
+      @if (formError) {
+      <p class="mensaje-error" role="alert">{{ formError }}</p>
+      }
+      @if (needsLogin) {
+      <p class="mensaje-error" role="alert">Para enviar tu reporte necesitas una cuenta, así te avisamos cuando sea procesado.
+        <a routerLink="/login">Inicia sesión</a> o <a routerLink="/registro">regístrate</a>.</p>
+      }
+      <div class="revision">🔍 <strong>Revisión previa:</strong> Tu reporte será revisado por nuestro equipo antes de publicarse como alerta oficial. Recibirás una notificación cuando sea procesado.</div>
+      <button class="enviar" type="submit">Enviar reporte →</button>
+    </div>
+  </form>
+  }
+</main>

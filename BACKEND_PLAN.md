@@ -1,54 +1,65 @@
-# Plan del Backend: AlertaSegura (Completado)
+# Plan del backend de AlertaSegura
 
-Este documento detalla el plan de implementación del Backend de Spring Boot para el sistema AlertaSegura.
+El backend de AlertaSegura vive en Supabase: Postgres para los datos, Supabase Auth para las cuentas, Row Level Security para los permisos, funciones SQL para la lógica de negocio y Storage para las fotos de evidencia. No hay servidor propio; el frontend Angular habla directo con Supabase.
 
-## Tecnologías Utilizadas
-- Java 25
-- Spring Boot 4.1.1
-- Spring Data JPA
-- Spring Security + JWT (jjwt)
-- MySQL 8.0+
-- Lombok
-- Maven
+Los scripts SQL están en `supabase/`. Si hay que crear la base desde cero, se ejecutan en el SQL Editor en este orden:
 
-## Fases Completadas (100%)
+1. `esquema_inicial.sql`
+2. `auth_y_rls.sql`
+3. `logica_negocio.sql`
+4. `ajustes_permisos.sql`
+5. `storage_evidencias.sql`
+6. `alerta_manual.sql`
+7. `perfil_distrito_y_preferencias.sql`
 
-### Fase 1: Base de Datos y Semillas (Completado)
-- [x] Creación del script `schema.sql` (18 tablas).
-- [x] Creación del script `data.sql` con catálogos iniciales y usuario administrador.
+## Fase 1: esquema y datos iniciales (completada)
 
-### Fase 2: Configuración (Completado)
-- [x] Conexión a base de datos MySQL en `application.properties`.
-- [x] Configuración de JWT y validación JPA (actualizado a `update`).
-- [x] Configuración Global CORS (`CorsConfig.java`).
+- 18 tablas en Postgres con claves foráneas e índices.
+- Catálogos iniciales: roles, categorías de emergencia, niveles de riesgo, estados de reporte y de alerta, tipos de contacto, contactos de emergencia y guías de prevención.
+- Los usuarios se guardan en `perfiles`, ligada a `auth.users`.
 
-### Fase 3: Entidades JPA (Completado)
-- [x] Creación de las 18 entidades (Usuario, Rol, Reporte, Alerta, Verificacion, Notificacion, Ubicacion, etc.) con sus respectivas relaciones (ManyToOne, OneToMany) y control de auditoría.
+## Fase 2: autenticación y roles (completada)
 
-### Fase 4: Repositorios (Completado)
-- [x] Interfaces de `JpaRepository` creadas para las 18 entidades.
-- [x] Métodos de consulta personalizados (ej. `findByCorreo`, `findByEstado`).
+- Registro e inicio de sesión con Supabase Auth.
+- Al registrarse, un trigger crea el perfil siempre con el rol `CIUDADANO` y su fila de preferencias de notificación. El rol nunca se lee de lo que mande el cliente.
+- El registro pide nombres, apellidos y un teléfono de 9 dígitos. El distrito es opcional.
+- Los roles son `ADMINISTRADOR` y `CIUDADANO`. El primer administrador se promueve a mano con un `update` sobre `perfiles`.
 
-### Fase 5: DTOs y Payload (Completado)
-- [x] Generación del formato de respuesta estándar `ApiResponse<T>`.
-- [x] Requests/Responses para Autenticación, Alertas, Reportes, Verificaciones, etc.
+## Fase 3: permisos con RLS (completada)
 
-### Fase 6: Lógica de Negocio / Servicios (Completado)
-- [x] `AuthService`: Login y registro.
-- [x] `ReporteService`: Creación y listado de reportes ciudadanos.
-- [x] `AlertaService`: Listado de alertas públicas.
-- [x] Otros servicios: Notificaciones, Contactos de Emergencia, Preferencias, Prevención, etc.
+- El ciudadano ve y crea solo sus reportes y sus notificaciones.
+- Alertas, prevención y contactos son de lectura pública.
+- Solo el administrador verifica reportes, crea y gestiona alertas, y gestiona usuarios.
+- Las funciones auxiliares de permisos están en el esquema `private`, que la API no expone.
+- Los avisos de `get_advisors` están revisados. Los que quedan son las funciones RPC, que cualquier usuario con sesión puede llamar; cada una comprueba el rol por dentro.
 
-### Fase 7: Seguridad (Completado)
-- [x] Implementación de `JwtTokenProvider` y `JwtAuthenticationFilter`.
-- [x] Proveedor de `CustomUserDetailsService`.
-- [x] Exposición de endpoints públicos vs privados (`SecurityConfig.java`).
+## Fase 4: lógica de negocio (completada)
 
-### Fase 8: Controladores REST (Completado)
-- [x] Controladores expuestos en `/api/*` para conectar con el frontend.
+Las escrituras pasan por funciones SQL en vez de inserts directos:
 
-### Fase 9: Manejo de Errores (Completado)
-- [x] `GlobalExceptionHandler` para retornar excepciones controladas (ej. validación, 404) usando `ApiResponse`.
+- `crear_reporte`
+- `verificar_reporte`
+- `cambiar_estado_reporte`
+- `crear_alerta_desde_reporte`
+- `crear_alerta_manual`
+- `cambiar_estado_alerta`
+- `cambiar_estado_usuario`
 
-## Estado Actual
-El backend está finalizado, compila correctamente (`BUILD SUCCESS`) y se ha probado la conexión a MySQL junto con el proceso de Registro y Login (Generación de JWT).
+Un trigger guarda el historial de estados de cada alerta. Al verificar un reporte y al publicar una alerta se crean notificaciones, respetando las preferencias de cada usuario. Cada acción importante deja una fila en `auditoria`.
+
+## Fase 5: evidencias (completada)
+
+- Bucket privado `evidencias`: imágenes JPEG, PNG o WebP de hasta 5 MB.
+- Cada archivo va en una carpeta con el `uid` del usuario. El dueño y los administradores pueden verlo.
+- `reportes.evidencia_url` guarda la ruta del archivo en el bucket.
+
+## Fase 6: conexión con el frontend (completada)
+
+- `supabase-js` con el cliente en `frontend/src/app/core/supabase/`.
+- Tipos de las tablas en `core/models/` y consultas compartidas en `core/data/datos.service.ts`.
+- `AuthService` usa Supabase Auth. Los servicios de alertas y del panel de administración leen y escriben en Supabase.
+- En `frontend/src/environments/` solo van la URL del proyecto y la clave pública. La clave `service_role` no se guarda en el repositorio.
+
+## Estado actual
+
+Registro, inicio de sesión, creación de reportes con evidencia, verificación, creación de alertas, notificaciones y mapa funcionan contra Supabase. Se probaron con la API usando un ciudadano y un administrador de prueba, y los datos de esa prueba se borraron después.

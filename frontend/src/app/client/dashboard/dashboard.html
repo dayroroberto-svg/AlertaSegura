@@ -1,0 +1,93 @@
+<main class="pagina">
+  <header class="cabecera">
+    <div>
+      <p class="bienvenida">Bienvenido de vuelta</p>
+      <h1>👋 Hola, {{ auth.session()?.nombres }} {{ auth.session()?.apellidos }}</h1>
+    </div>
+    <div class="acciones">
+      <button class="cerrar-sesion" type="button" (click)="auth.logout()">Cerrar sesión</button>
+      <a class="nuevo" routerLink="/reportar">+ Nuevo reporte</a>
+    </div>
+  </header>
+
+  <section class="metricas" aria-label="Resumen de tu actividad">
+    @for (metric of dashboardMetrics; track metric.label) {
+    <article class="metrica" [class]="'metrica ' + metric.tone">
+      <span class="metrica-icono" aria-hidden="true">{{ metric.icon }}</span>
+      <strong>{{ metric.value }}</strong>
+      <p>{{ metric.label }}</p>
+    </article>
+    }
+  </section>
+
+  <section class="paneles">
+    <article class="panel">
+      <div class="panel-cabecera">
+        <h2>Alertas cercanas</h2>
+        <a routerLink="/alertas">Ver todas →</a>
+      </div>
+      @for (alert of recentAlerts; track alert.title) {
+      <a class="fila-alerta" routerLink="/alertas">
+        <span class="fila-icono" aria-hidden="true">{{ icono(alert.type) }}</span>
+        <span class="fila-texto">
+          <strong>{{ alert.type }}</strong>
+          <small>{{ alert.location }}</small>
+        </span>
+        <span class="riesgo" [class]="'riesgo ' + alert.tone">{{ alert.risk }}</span>
+      </a>
+      } @empty {
+      <p class="vacio">No hay alertas publicadas por ahora.</p>
+      }
+    </article>
+
+    <article class="panel">
+      <div class="panel-cabecera">
+        <h2>Mis reportes</h2>
+        <a routerLink="/reportar">+ Nuevo →</a>
+      </div>
+      @for (report of reports; track report.code) {
+      <div class="reporte">
+        <div>
+          <p class="codigo">{{ report.code }}</p>
+          <p class="reporte-titulo">{{ report.title }}</p>
+        </div>
+        <span class="estado" [class]="'estado ' + report.tone">{{ report.status }}</span>
+      </div>
+      } @empty {
+      <p class="vacio">Aún no has enviado reportes.</p>
+      }
+    </article>
+
+    <article class="panel">
+      <h2 class="solo">Notificaciones</h2>
+      @for (notification of notifications; track notification.title) {
+      <div class="notificacion" [class.sin-leer]="notification.tone === 'coral'">
+        <span class="punto" aria-hidden="true"></span>
+        <div>
+          <p class="notificacion-mensaje">{{ notification.title }}</p>
+          <small>{{ notification.time }}</small>
+        </div>
+      </div>
+      } @empty {
+      <p class="vacio">No tienes notificaciones.</p>
+      }
+    </article>
+  </section>
+
+  <section class="accesos">
+    <a class="acceso mapa" routerLink="/mapa">
+      <span class="acceso-icono" aria-hidden="true">🗺</span>
+      <span>
+        <strong>Ver mapa de emergencias</strong>
+        <small>Consulta emergencias cercanas a tu ubicación</small>
+      </span>
+    </a>
+    <a class="acceso reportar" routerLink="/reportar">
+      <span class="acceso-icono" aria-hidden="true">🚨</span>
+      <span>
+        <strong>Reportar emergencia</strong>
+        <small>Informa sobre un incidente en tu área</small>
+      </span>
+    </a>
+  </section>
+</main>

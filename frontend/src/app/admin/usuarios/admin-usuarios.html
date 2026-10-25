@@ -1,0 +1,93 @@
+<app-admin-topbar title="Gestión de usuarios" [subtitle]="activos() + ' usuarios activos de ' + usuarios().length + ' registrados'" />
+<div class="adm-body">
+  <div class="stat-card" style="margin-bottom: 16px; padding: 14px 20px">
+    <div style="display: flex; gap: 12px; align-items: center">
+      <div style="position: relative; flex: 1; max-width: 320px">
+        <div style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%)">
+          <app-admin-icon name="search" [size]="14" color="#94a3b8" />
+        </div>
+        <input class="input-field" style="padding-left: 32px" placeholder="Buscar usuarios..." [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)" />
+      </div>
+      <select class="input-field" style="width: 140px" [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)">
+        <option value="">Todos los estados</option>
+        <option value="activos">Activos</option>
+        <option value="inactivos">Inactivos</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="stat-card" style="padding: 0; overflow: hidden">
+    <div class="table-head" style="grid-template-columns: 1fr 200px 160px 120px 80px 80px 150px">
+      <span>Nombre</span><span>Correo electrónico</span><span>Distrito</span><span>Registro</span><span>Reportes</span><span>Estado</span><span>Acciones</span>
+    </div>
+
+    @for (u of filtrados(); track u.id) {
+      <div class="table-row" style="grid-template-columns: 1fr 200px 160px 120px 80px 80px 150px">
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div [style.background]="u.activo ? '#eff6ff' : '#f1f5f9'" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+            <app-admin-icon name="user" [size]="14" [color]="u.activo ? '#2563eb' : '#94a3b8'" />
+          </div>
+          <div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--text)">{{ u.nombre }}</div>
+            <div class="mono" style="font-size: 11px; color: var(--text-muted)">{{ u.id }}</div>
+          </div>
+        </div>
+        <span style="font-size: 13px; color: var(--text-muted)">{{ u.email }}</span>
+        <span style="font-size: 13px; color: var(--text)">{{ u.distrito }}</span>
+        <span style="font-size: 13px; color: var(--text-muted)">{{ u.registro }}</span>
+        <span style="font-size: 13px; font-weight: 600; color: var(--text); text-align: center">{{ u.reportes }}</span>
+        <span [class]="'badge ' + (u.activo ? 'status-verified' : 'status-neutral')">{{ u.activo ? 'Activo' : 'Inactivo' }}</span>
+        <div style="display: flex; gap: 6px">
+          <button class="icon-btn" title="Ver" type="button" (click)="seleccionado.set(u)">
+            <app-admin-icon name="eye" [size]="13" color="#64748b" />
+          </button>
+          <button class="icon-btn" title="Editar" type="button">
+            <app-admin-icon name="edit" [size]="13" color="#64748b" />
+          </button>
+          <button class="icon-btn" [title]="u.activo ? 'Desactivar' : 'Activar'" type="button" (click)="alternar(u)">
+            <app-admin-icon name="stop" [size]="13" [color]="u.activo ? '#ea580c' : '#94a3b8'" />
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+@if (seleccionado(); as u) {
+  <div class="modal-overlay">
+    <div style="background: white; border-radius: 14px; padding: 28px; max-width: 420px; width: 90%">
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: #eff6ff; display: flex; align-items: center; justify-content: center">
+          <app-admin-icon name="user" [size]="22" color="#2563eb" />
+        </div>
+        <div>
+          <h3 style="font-size: 17px; font-weight: 700; margin: 0">{{ u.nombre }}</h3>
+          <p class="mono" style="font-size: 12px; color: var(--text-muted); margin: 2px 0 0">{{ u.id }}</p>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px">
+        <div style="grid-column: 1 / -1">
+          <p class="meta-label" style="margin-bottom: 3px">Correo electrónico</p>
+          <p style="font-size: 14px; font-weight: 500; margin: 0">{{ u.email }}</p>
+        </div>
+        <div>
+          <p class="meta-label" style="margin-bottom: 3px">Distrito</p>
+          <p style="font-size: 14px; font-weight: 500; margin: 0">{{ u.distrito }}</p>
+        </div>
+        <div>
+          <p class="meta-label" style="margin-bottom: 3px">Fecha de registro</p>
+          <p style="font-size: 14px; font-weight: 500; margin: 0">{{ u.registro }}</p>
+        </div>
+        <div>
+          <p class="meta-label" style="margin-bottom: 3px">Reportes enviados</p>
+          <p style="font-size: 14px; font-weight: 500; margin: 0">{{ u.reportes }}</p>
+        </div>
+        <div>
+          <p class="meta-label" style="margin-bottom: 3px">Estado de cuenta</p>
+          <p style="font-size: 14px; font-weight: 500; margin: 0">{{ u.activo ? 'Activo' : 'Inactivo' }}</p>
+        </div>
+      </div>
+      <button class="btn-secondary" style="width: 100%" type="button" (click)="seleccionado.set(null)">Cerrar</button>
+    </div>
+  </div>
+}

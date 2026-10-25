@@ -1,0 +1,68 @@
+<main class="pagina">
+  <a class="volver" routerLink="/alertas">← Volver a alertas</a>
+
+  @if (alerta(); as alerta) {
+  <div class="layout">
+    <article class="principal" [class]="'riesgo-' + alerta.nivelRiesgo">
+      <span class="barra" aria-hidden="true"></span>
+      <div class="contenido">
+        <header class="cabecera">
+          <span class="icono" aria-hidden="true">{{ alerta.icono }}</span>
+          <div class="titulo">
+            <h1>{{ alerta.categoria }}</h1>
+            <p>📍 {{ alerta.direccion }}</p>
+          </div>
+          <span class="insignia-riesgo">{{ etiquetaRiesgo[alerta.nivelRiesgo] }}</span>
+        </header>
+
+        <dl class="datos">
+          <div><dt>Fecha</dt><dd>{{ alerta.fechaPublicacion | date: 'dd/MM/yyyy' }}</dd></div>
+          <div><dt>Hora</dt><dd>{{ alerta.fechaPublicacion | date: 'HH:mm' }}</dd></div>
+          <div><dt>Estado</dt><dd><span class="insignia-estado" [class]="'estado-' + alerta.estado">{{ etiquetaEstado[alerta.estado] }}</span></dd></div>
+        </dl>
+
+        <h2>Descripción de la emergencia</h2>
+        <p class="descripcion">{{ alerta.descripcion }}</p>
+
+        <h2>Recomendaciones para la población</h2>
+        <ol class="recomendaciones">
+          @for (recomendacion of alerta.recomendaciones; track recomendacion) {
+          <li>{{ recomendacion }}</li>
+          }
+        </ol>
+      </div>
+    </article>
+
+    <aside class="lateral">
+      <section class="panel">
+        <h3>Acciones rápidas</h3>
+        <a class="boton primario" routerLink="/mapa">🗺 Ver en mapa</a>
+        <a class="boton secundario" routerLink="/reportar">📋 Reportar incidente</a>
+      </section>
+
+      @if (alerta.nivelRiesgo === 'ALTO') {
+      <section class="aviso">
+        <strong>⚠️ Alto riesgo</strong>
+        <p>Siga todas las instrucciones de las autoridades competentes y mantenga la calma.</p>
+      </section>
+      }
+
+      <section class="panel">
+        <h3>Contactos</h3>
+        @for (contacto of contactos; track contacto.nombre) {
+        <div class="contacto">
+          <span>{{ contacto.nombre }}</span>
+          <a [href]="'tel:' + contacto.telefono">{{ contacto.telefono }}</a>
+        </div>
+        }
+      </section>
+    </aside>
+  </div>
+  } @else if (cargado()) {
+  <div class="no-encontrada">
+    <h1>Alerta no encontrada</h1>
+    <p>La alerta que buscas no existe o ya no está disponible.</p>
+    <a class="boton primario" routerLink="/alertas">Ver todas las alertas</a>
+  </div>
+  }
+</main>

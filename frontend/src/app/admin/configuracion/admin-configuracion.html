@@ -1,0 +1,121 @@
+<app-admin-topbar title="Configuración" subtitle="Ajustes del sistema y perfil administrativo" />
+<div class="adm-body">
+  @if (configuracion(); as c) {
+    <div style="display: grid; grid-template-columns: 240px 1fr; gap: 16px">
+      <div class="stat-card" style="padding: 8px; height: fit-content">
+        @for (s of secciones; track s.key) {
+          <div
+            (click)="seccion.set(s.key)"
+            [style.background]="seccion() === s.key ? '#eff6ff' : 'transparent'"
+            [style.color]="seccion() === s.key ? 'var(--blue)' : 'var(--text)'"
+            [style.font-weight]="seccion() === s.key ? 600 : 400"
+            style="display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 8px; cursor: pointer; transition: all 0.15s; font-size: 14px"
+          >
+            <app-admin-icon [name]="s.icon" [size]="16" [color]="seccion() === s.key ? 'var(--blue)' : '#64748b'" />
+            {{ s.label }}
+          </div>
+        }
+      </div>
+
+      <div class="stat-card">
+        @switch (seccion()) {
+          @case ('perfil') {
+            <div>
+              <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 20px">Perfil del administrador</h3>
+              <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding: 16px; background: #f8fafc; border-radius: 10px">
+                <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--navy); display: flex; align-items: center; justify-content: center">
+                  <app-admin-icon name="user" [size]="28" color="white" />
+                </div>
+                <div>
+                  <h4 style="font-size: 16px; font-weight: 700; margin: 0 0 4px">Administrador General</h4>
+                  <p style="font-size: 13px; color: var(--text-muted); margin: 0">{{ c.perfil.correo }} · Rol: {{ c.perfil.rol }}</p>
+                </div>
+                <button class="btn-secondary" style="margin-left: auto; font-size: 12px" type="button">Cambiar foto</button>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px">
+                @for (campo of camposPerfil(); track campo[0]) {
+                  <div>
+                    <label class="field-label">{{ campo[0] }}</label>
+                    <input class="input-field" [value]="campo[1]" />
+                  </div>
+                }
+                <div style="grid-column: 1 / -1">
+                  <label class="field-label">Correo electrónico</label>
+                  <input class="input-field" [value]="c.perfil.correo" type="email" />
+                </div>
+              </div>
+              <div style="margin-top: 20px; display: flex; justify-content: flex-end">
+                <button class="btn-primary" type="button">Guardar cambios</button>
+              </div>
+            </div>
+          }
+          @case ('notificaciones') {
+            <div>
+              <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 20px">Configuración de notificaciones</h3>
+              @for (item of c.notificaciones; track item.label; let i = $index) {
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border)">
+                  <div>
+                    <p style="font-size: 14px; font-weight: 600; margin: 0 0 2px">{{ item.label }}</p>
+                    <p style="font-size: 12px; color: var(--text-muted); margin: 0">{{ item.desc }}</p>
+                  </div>
+                  <div
+                    role="switch"
+                    [attr.aria-checked]="notificaciones()[i]"
+                    [attr.aria-label]="item.label"
+                    (click)="alternar(i)"
+                    [style.background]="notificaciones()[i] ? 'var(--blue)' : '#d1d5db'"
+                    style="width: 44px; height: 24px; border-radius: 12px; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0"
+                  >
+                    <div
+                      [style.left.px]="notificaciones()[i] ? 23 : 3"
+                      style="width: 18px; height: 18px; border-radius: 50%; background: white; position: absolute; top: 3px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2)"
+                    ></div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          @case ('categorias') {
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px">
+                <h3 style="font-size: 16px; font-weight: 700; margin: 0">Categorías de emergencia</h3>
+                <button class="btn-primary btn-flex" style="font-size: 12px; padding: 7px 14px; gap: 5px" type="button">
+                  <app-admin-icon name="plus" [size]="13" />Agregar categoría
+                </button>
+              </div>
+              @for (cat of c.categorias; track cat) {
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 13px 16px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border)">
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--blue)"></div>
+                    <span style="font-size: 14px; font-weight: 500; color: var(--text)">{{ cat }}</span>
+                  </div>
+                  <div style="display: flex; gap: 6px">
+                    <button style="padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; background: white; cursor: pointer; font-size: 12px; color: var(--text-muted)" type="button">Editar</button>
+                    <button style="padding: 4px 8px; border: 1px solid #fecaca; border-radius: 6px; background: white; cursor: pointer; font-size: 12px; color: #dc2626" type="button">Eliminar</button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          @case ('sistema') {
+            <div>
+              <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 20px">Configuración general del sistema</h3>
+              <div style="display: flex; flex-direction: column; gap: 16px">
+                @for (f of c.sistema; track f.label) {
+                  <div>
+                    <label class="field-label">{{ f.label }}</label>
+                    <input class="input-field" [value]="f.val" />
+                  </div>
+                }
+                <div style="padding-top: 16px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end">
+                  <button class="btn-secondary" type="button">Restaurar valores por defecto</button>
+                  <button class="btn-primary" type="button">Guardar configuración</button>
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+</div>

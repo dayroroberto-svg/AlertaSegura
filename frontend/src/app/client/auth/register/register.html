@@ -1,0 +1,81 @@
+<main class="register-page">
+  <div class="register-box">
+    <a class="brand" routerLink="/" aria-label="AlertaSegura, ir al inicio">
+      <span class="brand-icon" aria-hidden="true">🛡</span>
+      <span class="brand-name">Alerta<strong>Segura</strong></span>
+    </a>
+
+    <section class="form-card" aria-labelledby="register-title">
+      <h1 id="register-title">Crear cuenta</h1>
+      <p class="form-lead">Únete a AlertaSegura y mantente informado de emergencias</p>
+
+      @if (registered()) {
+      <div class="success-card" role="status">
+        <strong>Registro exitoso</strong>
+        <p>Tu cuenta fue creada correctamente. Ya puedes iniciar sesión.</p>
+        <button type="button" class="btn-primary" (click)="goToLogin()">Ir al inicio de sesión →</button>
+      </div>
+      } @else {
+      <form [formGroup]="registerForm" (ngSubmit)="submit()" novalidate>
+        <div class="two">
+          <div class="field">
+            <label for="nombres">Nombres</label>
+            <input id="nombres" type="text" formControlName="nombres" placeholder="Juan" autocomplete="given-name" />
+            @if (registerForm.controls.nombres.touched && registerForm.controls.nombres.invalid) { <small class="field-error">Ingresa tus nombres.</small> }
+          </div>
+          <div class="field">
+            <label for="apellidos">Apellidos</label>
+            <input id="apellidos" type="text" formControlName="apellidos" placeholder="Pérez García" autocomplete="family-name" />
+            @if (registerForm.controls.apellidos.touched && registerForm.controls.apellidos.invalid) { <small class="field-error">Ingresa tus apellidos.</small> }
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="correo">Correo electrónico</label>
+          <input id="correo" type="email" formControlName="correo" placeholder="correo@ejemplo.com" autocomplete="email" />
+          @if (registerForm.controls.correo.touched && registerForm.controls.correo.invalid) { <small class="field-error">Ingresa un correo válido.</small> }
+        </div>
+
+        <div class="field">
+          <label for="telefono">Teléfono</label>
+          <input id="telefono" type="tel" inputmode="numeric" maxlength="9" formControlName="telefono" placeholder="999999999" autocomplete="tel" />
+          @if (registerForm.controls.telefono.touched && registerForm.controls.telefono.invalid) { <small class="field-error">Ingresa un número de 9 dígitos.</small> }
+        </div>
+
+        <div class="field">
+          <label for="distrito">Distrito (opcional)</label>
+          <input id="distrito" type="text" maxlength="100" formControlName="distrito" placeholder="Ate" autocomplete="address-level2" />
+        </div>
+
+        <div class="two">
+          <div class="field">
+            <label for="contrasena">Contraseña</label>
+            <input id="contrasena" type="password" formControlName="contrasena" placeholder="••••••••" autocomplete="new-password" />
+            @if (registerForm.controls.contrasena.touched && registerForm.controls.contrasena.invalid) { <small class="field-error">Mínimo 6 caracteres, un número y un símbolo.</small> }
+          </div>
+          <div class="field">
+            <label for="confirmarContrasena">Confirmar contraseña</label>
+            <input id="confirmarContrasena" type="password" formControlName="confirmarContrasena" placeholder="••••••••" autocomplete="new-password" />
+          </div>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="aceptaTerminos" />
+          <label for="aceptaTerminos">
+            Acepto los <a href="#" (click)="$event.preventDefault()">Términos de uso</a> y la <a href="#" (click)="$event.preventDefault()">Política de privacidad</a> de AlertaSegura
+          </label>
+        </div>
+
+        @if (registerForm.touched && registerForm.hasError('passwordsMismatch')) { <small class="field-error">Las contraseñas no coinciden.</small> }
+        @if (errorMessage()) { <div class="form-error" role="alert">{{ errorMessage() }}</div> }
+
+        <button type="submit" class="btn-primary" [disabled]="loading()">
+          {{ loading() ? 'Creando cuenta...' : 'Crear cuenta →' }}
+        </button>
+      </form>
+
+      <p class="form-footer">¿Ya tienes cuenta? <button type="button" class="link-button" (click)="goToLogin()">Iniciar sesión</button></p>
+      }
+    </section>
+  </div>
+</main>

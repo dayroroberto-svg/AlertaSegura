@@ -1,6 +1,4 @@
-# =======================
-# Archivos de IDE y SO
-# =======================
+# IDE y sistema operativo
 .idea/
 .vscode/
 *.suo
@@ -11,25 +9,9 @@
 .DS_Store
 Thumbs.db
 
-# =======================
-# Backend (Spring Boot)
-# =======================
-alertasegura/target/
-alertasegura/logs/
-alertasegura/*.log
-alertasegura/uploads/
-alertasegura/src/main/resources/application-local.properties
-
-# =======================
 # Frontend (Angular)
-# =======================
 frontend/dist/
 frontend/out-tsc/
 frontend/node_modules/
 frontend/.angular/
 frontend/.npm/
-
-# =======================
-# Archivos Temporales IA
-# =======================
-.gemini/

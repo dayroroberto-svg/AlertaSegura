@@ -1,0 +1,68 @@
+<app-admin-topbar title="Gestión de reportes" [subtitle]="pendientes() + ' reportes pendientes de revisión'" />
+<div class="adm-body">
+  <div class="stat-card" style="margin-bottom: 16px; padding: 16px 20px">
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
+      <div style="position: relative; flex: 1; min-width: 200px">
+        <div style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%)">
+          <app-admin-icon name="search" [size]="14" color="#94a3b8" />
+        </div>
+        <input class="input-field" style="padding-left: 32px" placeholder="Buscar por código o ubicación..." [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)" />
+      </div>
+      <select class="input-field" style="width: 160px" [ngModel]="filtroTipo()" (ngModelChange)="filtroTipo.set($event)">
+        <option value="">Tipo de emergencia</option>
+        <option>Incendio</option><option>Inundación</option><option>Sismo</option><option>Accidente vial</option><option>Deslizamiento</option><option>Explosión</option>
+      </select>
+      <select class="input-field" style="width: 140px" [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)">
+        <option value="">Estado</option>
+        <option value="revision">En revisión</option>
+        <option value="verificado">Verificado</option>
+        <option value="rechazado">Rechazado</option>
+      </select>
+      <select class="input-field" style="width: 140px" [ngModel]="filtroGravedad()" (ngModelChange)="filtroGravedad.set($event)">
+        <option value="">Nivel de riesgo</option>
+        <option value="alto">Alto</option>
+        <option value="medio">Medio</option>
+        <option value="bajo">Bajo</option>
+      </select>
+      <button class="btn-secondary btn-flex" type="button" (click)="limpiar()">
+        <app-admin-icon name="x" [size]="13" />Limpiar
+      </button>
+    </div>
+  </div>
+
+  <div class="stat-card" style="padding: 0; overflow: hidden">
+    <div class="table-head" style="grid-template-columns: 140px 130px 180px 130px 100px 110px 110px">
+      <span>Código</span><span>Tipo</span><span>Ubicación</span><span>Fecha / Hora</span><span>Gravedad</span><span>Estado</span><span></span>
+    </div>
+
+    @if (filtrados().length === 0) {
+      <div style="padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 14px">No se encontraron reportes con los filtros seleccionados.</div>
+    } @else {
+      @for (r of filtrados(); track r.id) {
+        <div class="table-row" style="grid-template-columns: 140px 130px 180px 130px 100px 110px 110px">
+          <span class="mono" style="font-size: 12px; font-weight: 600; color: var(--blue)">{{ r.id }}</span>
+          <span style="font-size: 13px; color: var(--text); font-weight: 500">{{ r.tipo }}</span>
+          <span style="font-size: 13px; color: var(--text-muted)">{{ r.ubicacion }}</span>
+          <div>
+            <div style="font-size: 13px; color: var(--text); font-weight: 500">{{ r.fecha }}</div>
+            <div style="font-size: 11px; color: var(--text-muted)">{{ r.hora }}</div>
+          </div>
+          <app-admin-risk-badge [level]="r.gravedad" />
+          <app-admin-status-badge [status]="r.estado" />
+          <button class="btn-secondary btn-sm btn-flex" style="gap: 5px" type="button" [routerLink]="['/admin/reportes', r.id]">
+            <app-admin-icon name="eye" [size]="13" />Ver detalles
+          </button>
+        </div>
+      }
+    }
+  </div>
+
+  <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center">
+    <span style="font-size: 13px; color: var(--text-muted)">Mostrando {{ filtrados().length }} de {{ reportes().length }} reportes</span>
+    <div style="display: flex; gap: 6px">
+      @for (n of [1, 2, 3]; track n) {
+        <button [class]="n === 1 ? 'btn-primary' : 'btn-secondary'" style="width: 32px; height: 32px; padding: 0; font-size: 13px" type="button">{{ n }}</button>
+      }
+    </div>
+  </div>
+</div>

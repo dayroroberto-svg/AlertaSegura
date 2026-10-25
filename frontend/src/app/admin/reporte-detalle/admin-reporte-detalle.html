@@ -1,0 +1,140 @@
+@if (reporte(); as r) {
+  <app-admin-topbar title="Detalle del reporte" [subtitle]="r.id">
+    <button class="btn-secondary btn-flex" type="button" routerLink="/admin/reportes">
+      <app-admin-icon name="arrow" [size]="14" />Volver
+    </button>
+  </app-admin-topbar>
+  <div class="adm-body" style="max-width: 960px">
+    <div style="display: grid; grid-template-columns: 1fr 340px; gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <div class="stat-card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px">
+            <h2 style="font-size: 17px; font-weight: 700; margin: 0; color: var(--text)">Información del reporte</h2>
+            <app-admin-status-badge [status]="r.estado" />
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px">
+            <div>
+              <p class="meta-label">Código del reporte</p>
+              <p class="mono" style="font-size: 14px; font-weight: 500; color: var(--text); margin: 0">{{ r.id }}</p>
+            </div>
+            <div>
+              <p class="meta-label">Tipo de emergencia</p>
+              <p style="font-size: 14px; font-weight: 500; color: var(--text); margin: 0">{{ r.tipo }}</p>
+            </div>
+            <div>
+              <p class="meta-label">Ubicación</p>
+              <p style="font-size: 14px; font-weight: 500; color: var(--text); margin: 0">{{ r.ubicacion }}</p>
+            </div>
+            <div>
+              <p class="meta-label">Fecha y hora</p>
+              <p style="font-size: 14px; font-weight: 500; color: var(--text); margin: 0">{{ r.fecha }} — {{ r.hora }}</p>
+            </div>
+          </div>
+          <div style="margin-top: 16px">
+            <p class="meta-label">Nivel de gravedad</p>
+            <app-admin-risk-badge [level]="r.gravedad" />
+          </div>
+          <div style="margin-top: 16px">
+            <p class="meta-label" style="margin-bottom: 6px">Descripción</p>
+            <p style="font-size: 14px; color: var(--text); margin: 0; line-height: 1.6; background: #f8fafc; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border)">{{ r.descripcion }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 14px">Evidencia adjunta</h3>
+          <div style="border-radius: 10px; overflow: hidden; position: relative; background: #e2e8f0; height: 200px">
+            <img
+              src="https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?w=800&h=400&fit=crop&auto=format"
+              alt="Evidencia del reporte de emergencia"
+              style="width: 100%; height: 100%; object-fit: cover"
+            />
+            <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0, 0, 0, 0.6); color: white; font-size: 11px; padding: 4px 10px; border-radius: 20px">
+              Imagen adjunta por ciudadano
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <div class="stat-card">
+          <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 14px">Ciudadano reportante</h3>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding: 12px; background: #f8fafc; border-radius: 8px">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center">
+              <app-admin-icon name="user" [size]="18" color="white" />
+            </div>
+            <div>
+              <p style="font-size: 14px; font-weight: 600; margin: 0">{{ r.ciudadano }}</p>
+              <p style="font-size: 12px; color: var(--text-muted); margin: 2px 0 0">Ciudadano verificado</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 14px">Estado del reporte</h3>
+          <div style="padding: 14px; background: #f8fafc; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 14px">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px">
+              <app-admin-icon name="clock" [size]="14" color="#64748b" />
+              <span style="font-size: 12px; color: var(--text-muted); font-weight: 500">Recibido: {{ r.fecha }} {{ r.hora }}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px">
+              <app-admin-icon name="info" [size]="14" color="#2563eb" />
+              <span style="font-size: 12px; color: #2563eb; font-weight: 500">Pendiente de verificación</span>
+            </div>
+          </div>
+
+          @if (r.estado === 'revision') {
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <button class="btn-success btn-full" type="button" (click)="modal.set('verificar')">
+                <app-admin-icon name="check" [size]="15" />Verificar reporte
+              </button>
+              <button class="btn-danger btn-full" type="button" (click)="modal.set('rechazar')">
+                <app-admin-icon name="x" [size]="15" />Rechazar reporte
+              </button>
+            </div>
+          }
+          @if (r.estado === 'verificado') {
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 8px">
+              <app-admin-icon name="check" [size]="15" color="#16a34a" />
+              <span style="font-size: 13px; color: #16a34a; font-weight: 600">Reporte verificado</span>
+            </div>
+          }
+          @if (r.estado === 'rechazado') {
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 8px">
+              <app-admin-icon name="x" [size]="15" color="#dc2626" />
+              <span style="font-size: 13px; color: #dc2626; font-weight: 600">Reporte rechazado</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (modal(); as accion) {
+    <div class="modal-overlay">
+      <div style="background: white; border-radius: 14px; padding: 32px; max-width: 420px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2)">
+        <div
+          [style.background]="accion === 'verificar' ? '#f0fdf4' : '#fef2f2'"
+          style="width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px"
+        >
+          <app-admin-icon [name]="accion === 'verificar' ? 'check' : 'x'" [size]="24" [color]="accion === 'verificar' ? '#16a34a' : '#dc2626'" />
+        </div>
+        <h3 style="text-align: center; font-size: 18px; font-weight: 700; margin: 0 0 8px">
+          {{ accion === 'verificar' ? 'Verificar reporte' : 'Rechazar reporte' }}
+        </h3>
+        <p style="text-align: center; font-size: 14px; color: var(--text-muted); margin: 0 0 24px; line-height: 1.5">
+          @if (accion === 'verificar') {
+            ¿Confirmas que el reporte {{ r.id }} es válido y deseas proceder a verificarlo?
+          } @else {
+            ¿Estás seguro de que deseas rechazar el reporte {{ r.id }}? Esta acción no se puede deshacer.
+          }
+        </p>
+        <div style="display: flex; gap: 10px">
+          <button class="btn-secondary" style="flex: 1" type="button" (click)="modal.set(null)">Cancelar</button>
+          <button [class]="accion === 'verificar' ? 'btn-success' : 'btn-danger'" style="flex: 1" type="button" (click)="confirmar(accion)">
+            {{ accion === 'verificar' ? 'Sí, verificar' : 'Sí, rechazar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+}

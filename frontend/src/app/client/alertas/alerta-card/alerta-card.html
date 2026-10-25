@@ -1,0 +1,21 @@
+<a class="card" [class]="'card riesgo-' + alerta().nivelRiesgo" [routerLink]="['/alertas', alerta().idAlerta]">
+  <span class="barra" aria-hidden="true"></span>
+  <div class="cuerpo">
+    <div class="cabecera">
+      <span class="icono" aria-hidden="true">{{ alerta().icono }}</span>
+      <div class="titulo">
+        <strong>{{ alerta().categoria }}</strong>
+        <small>📍 {{ alerta().direccion }}</small>
+      </div>
+      <span class="insignia-riesgo">{{ etiquetaRiesgo[alerta().nivelRiesgo] }}</span>
+    </div>
+    <p class="descripcion">{{ alerta().descripcion }}</p>
+    <div class="pie">
+      <div class="meta">
+        <span class="insignia-estado" [class]="'insignia-estado estado-' + alerta().estado">{{ etiquetaEstado[alerta().estado] }}</span>
+        <span class="fecha">🕐 {{ alerta().fechaPublicacion | date: 'dd/MM/yyyy · HH:mm' }}</span>
+      </div>
+      <span class="ver">Ver detalles →</span>
+    </div>
+  </div>
+</a>
